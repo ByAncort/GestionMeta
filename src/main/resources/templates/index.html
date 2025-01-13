@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html
+        lang="en"
+        xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Home</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link th:href="@{/main.css}" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
+
+</head>
+<body class="bg-slate-50">
+<header class="bg-white container mx-auto">
+  <h1 class="text-4xl font-bold p-8">Home Page</h1>
+
+</header>
+<button id="openModal" class="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none">
+  Agregar Tarea
+</button>
+
+<div th:replace="fragments/modal :: taskModal"></div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Open the modal
+    document.getElementById("openModal").addEventListener("click", function () {
+      document.getElementById("taskModal").classList.remove("hidden");
+    });
+
+    // Close the modal
+    document.getElementById("closeModal").addEventListener("click", function () {
+      document.getElementById("taskModal").classList.add("hidden");
+    });
+  });
+</script>
+</body>
+</html>
