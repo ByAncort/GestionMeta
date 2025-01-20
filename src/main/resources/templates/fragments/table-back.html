@@ -1,0 +1,28 @@
+<div th:fragment="TaskTable">
+
+  <table class="min-w-full table-auto bg-white rounded-lg shadow-md">
+    <thead>
+    <tr class="bg-gray-800 text-white">
+      <th class="px-4 py-2 text-left">Nombre</th>
+      <th class="px-4 py-2 text-left">Descripción</th>
+      <th class="px-4 py-2 text-left">Estado</th>
+      <th class="px-4 py-2 text-left">Horas</th>
+      <th class="px-4 py-2 text-left">Fecha de Creación</th>
+      <th class="px-4 py-2 text-left">Última Actualización</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Recorrer las tareas y mostrarlas -->
+    <tr th:each="task : ${tasks}" class="border-t border-gray-300 hover:bg-gray-50">
+      <td class="px-4 py-2" th:text="${task.name}"></td>
+      <td class="px-4 py-2" th:text="${task.description}"></td>
+      <td class="px-4 py-2" th:text="${task.status}"></td>
+      <td class="px-4 py-2" th:text="${task.horas}"></td>
+      <td class="px-4 py-2" th:text="${task.creation_date}"></td>
+      <td class="px-4 py-2" th:text="${task.last_update_date}"></td>
+    </tr>
+
+    </tbody>
+  </table>
+
+</div>

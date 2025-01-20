@@ -1,6 +1,7 @@
 package com.app.LoginAndGestion.Security;
 
 import com.app.LoginAndGestion.Service.UserLoginService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,6 +43,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Transactional
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
@@ -50,12 +52,20 @@ public class SecurityConfig {
                     httpForm
                             .loginPage("/login")
                             .permitAll();
-                    httpForm.defaultSuccessUrl("/dashboard", true);  // Asegúrate de que esté configurado correctamente
+                    httpForm.defaultSuccessUrl("/proyectos", true);  // Asegúrate de que esté configurado correctamente
                 })
                 .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers("/signup", "/css/**", "/js/**").permitAll();
+                    // Configurar rutas específicas antes de `anyRequest()`
+                    registry.requestMatchers("/api/task/update").hasRole("ADMIN");
+                    registry.requestMatchers("/update/**").hasRole("ADMIN");
+
+                    // Rutas públicas
+                    registry.requestMatchers("/signup", "/proyectos/**", "/css/**", "/js/**").permitAll();
+
+                    // Regla global para cualquier otra solicitud
                     registry.anyRequest().authenticated();
                 })
                 .build();
     }
+
 }

@@ -1,0 +1,163 @@
+<div th:fragment="TaskTable">
+
+        <div class="relative overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+            <table class="w-full text-sm text-left rtl:text-right text-gray-700 dark:text-gray-300">
+                <thead class="text-xs font-semibold uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="px-6 py-3">Nombre</th>
+                    <th scope="col" class="px-6 py-3">Responsable</th>
+                    <th scope="col" class="px-6 py-3">Estado</th>
+                    <th scope="col" class="px-6 py-3">horas</th>
+                    <th scope="col" class="px-6 py-3">Fecha de Creación</th>
+                    <th scope="col" class="px-6 py-3">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="task : ${tasks}"
+                    class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <th scope="row"
+                        class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
+                        th:text="${task.name}">
+                    </th>
+                    <td class="px-6 py-4" th:text="${task.responsable}"></td>
+                    <td class="px-6 py-4">
+                            <span th:text="${task.status}"
+                                  class="px-2 py-1 text-xs font-semibold rounded-lg"
+                                  th:classappend="${task.status == 'Completada' ? 'bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-200' :
+                                                   task.status == 'En Progreso' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-800 dark:text-yellow-200' :
+                                                   'bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-200'}"></span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="text-sm font-medium text-gray-700" th:text="${task.horas}">0</span>
+                    </td>
+                    <td class="px-6 py-4" th:text="${task.creationDate}"></td>
+                    <td class="px-6 py-4 text-right">
+                        <a href="#" th:href="@{'/proyectos/' + ${filtro} + '/edit/' + ${task.id}}"
+                           class="inline-block px-3 py-1 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">
+                            Editar
+                        </a>
+
+                        <button type="button" th:attr="onclick='completeTask(' + ${task.id} + ')'"
+                                class="inline-block px-3 py-1 text-sm font-medium text-white bg-green-500 rounded-lg hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700">
+                            Completar
+                        </button>
+
+
+
+                    </td>
+
+                    <script>
+                        function completeTask(taskId) {
+                            console.log("id a actualizar: " + taskId);
+
+                            fetch('/api/task/update', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ id: taskId }) // Enviamos el id como JSON
+
+                            })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Error en la solicitud');
+                                    }
+                                    location.reload();
+                                    return response.json(); // Si la respuesta es válida, se parsea como JSON
+                                })
+                                .then(data => {
+                                    console.log('Tarea completada:', data);
+                                    // Aquí puedes actualizar la UI o mostrar un mensaje de éxito
+                                })
+                                .catch(error => {
+                                    console.error('Error al completar la tarea:', error);
+                                });
+                        }
+
+                    </script>
+
+                </tr>
+                </tbody>
+            </table>
+            <div class="flex flex-col items-center">
+                <!-- Help text -->
+<!--                <span class="text-sm text-gray-700 dark:text-gray-400">Showing-->
+<!--                <span id="start" class="font-semibold text-gray-900 dark:text-white">1</span> to-->
+<!--                <span id="end" class="font-semibold text-gray-900 dark:text-white">10</span> of-->
+<!--                <span id="total" class="font-semibold text-gray-900 dark:text-white">100</span> Entries-->
+<!--                </span>-->
+                <div class="inline-flex mt-2 xs:mt-0 space-x-2">
+                    <!-- Prev Button -->
+                    <button id="prevButton"
+                            class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-l-md hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-all duration-200">
+                        <svg class="w-4 h-4 me-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5H1m0 0 4 4M1 5l4-4"/>
+                        </svg>
+                        Prev
+                    </button>
+
+                    <!-- Next Button -->
+                    <button id="nextButton"
+                            class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-gray-800 border-0 rounded-r-md hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white transition-all duration-200">
+                        Next
+                        <svg class="w-4 h-4 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+                        </svg>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+
+    <script>
+        window.onload = function() {
+            // Check if the URL contains '/edit/' to trigger modal opening
+            if (window.location.href.includes("/edit/")) {
+                openModal();
+            }
+
+            // Function to open the modal
+            function openModal() {
+                const modal = document.getElementById('taskModalUpdate');
+                modal.classList.remove('hidden'); // Show the modal
+            }
+
+            // Function to close the modal and remove '/edit/{id}' from the URL
+            document.getElementById('closeModal').addEventListener('click', function() {
+                const modal = document.getElementById('taskModalUpdate');
+                modal.classList.add('hidden'); // Hide the modal
+
+                // Remove '/edit/{id}' from the URL using history.pushState()
+                history.pushState(null, '', window.location.pathname);
+            });
+
+            // Handle scenario where the modal might be hidden unexpectedly
+            // if (!document.getElementById('taskModalUpdate').classList.contains('hidden') && window.location.href.includes("/edit/")) {
+            //     history.pushState(null, '', window.location.pathname); // Remove '/edit/{id}' if modal is hidden
+            // }
+        }
+        document.getElementById('nextButton').addEventListener('click', function() {
+            let currentUrl = window.location.href;
+            let url = new URL(currentUrl);
+            let pageParam = url.searchParams.get('page');
+            pageParam = pageParam ? parseInt(pageParam) : 1;
+            let nextPage = pageParam + 1;
+            url.searchParams.set('page', nextPage);
+            window.location.href = url.toString();
+        });
+        document.getElementById('prevButton').addEventListener('click', function() {
+            let currentUrl = window.location.href;
+            let url = new URL(currentUrl);
+            let pageParam = url.searchParams.get('page');
+            pageParam = pageParam ? parseInt(pageParam) : 1;
+            let nextPage = pageParam - 1;
+            url.searchParams.set('page', nextPage);
+            window.location.href = url.toString();
+        });
+
+
+
+    </script>
+
+</div>

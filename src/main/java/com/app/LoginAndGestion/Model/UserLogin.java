@@ -1,11 +1,10 @@
 package com.app.LoginAndGestion.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Set;
 
 @Entity
 @Getter
@@ -18,6 +17,8 @@ public class UserLogin {
     private String email;
     private String password;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Role> roles;
     // Constructor vacío para JPA
     public UserLogin() {}
 
@@ -58,5 +59,13 @@ public class UserLogin {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 }

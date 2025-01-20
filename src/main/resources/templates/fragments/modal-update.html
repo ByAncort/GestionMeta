@@ -1,9 +1,6 @@
-<!-- resources/templates/fragments/modal.html -->
-
-<div th:fragment="taskModal">
-
+<div th:fragment="updateModal">
   <!-- Modal -->
-  <div id="taskModal"
+  <div id="taskModalUpdate"
        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
     <div class="bg-white p-8 rounded-lg w-96">
       <h2 class="text-xl font-semibold mb-4">Agregar Tarea</h2>
@@ -11,8 +8,10 @@
         <!-- Nombre -->
         <div>
           <label for="name" class="block text-gray-700">Nombre de la Tarea</label>
-          <input type="text" id="name" name="name" class="w-full p-2 border border-gray-300 rounded" required>
+          <input type="text" id="name" name="name" class="w-full p-2 border border-gray-300 rounded"
+                 th:value="${taskforEdit.name}" required>
         </div>
+
 
         <div class="flex space-x-4">
           <!-- Primer select: Estado -->

@@ -1,0 +1,141 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Home</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link th:href="@{/main.css}" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="bg-white p-8 rounded-lg shadow-lg w-3/6" data-task-id="${taskforEdit.id}">
+    <h2 class="text-xl font-semibold mb-4">Detalles Tarea <span th:text="${taskforEdit.id}"></span></h2>
+    <form class="space-y-4">
+        <!-- Nombre -->
+        <div>
+            <label for="name" class="block text-gray-700">Nombre de la Tarea</label>
+            <input type="text" id="name" name="name" class="w-full p-2 border border-gray-300 rounded"
+                   th:value="${taskforEdit.name}" required>
+        </div>
+
+        <div class="flex space-x-4">
+            <!-- Primer select: Estado -->
+            <div class="w-1/2">
+                <label for="status" class="block text-gray-700">Estado</label>
+                <select id="status" name="status" class="w-full p-2 border border-gray-300 rounded">
+                    <option value="pendiente">Pendiente</option>
+                    <option value="completada">Completada</option>
+                </select>
+            </div>
+
+            <!-- Segundo input: Proyecto -->
+            <div class="w-1/2">
+                <label for="proyect" class="block text-gray-700">Proyecto</label>
+                <input type="text" id="proyect" name="proyect" class="w-full p-2 border border-gray-300 rounded"
+                       th:value="${taskforEdit.projectName}" disabled>
+            </div>
+        </div>
+
+        <div class="flex space-x-4">
+            <!-- Primer select: Responsable -->
+            <div class="w-1/2">
+                <label for="user" class="block text-gray-700">Responsable</label>
+                <select id="user" name="user" class="w-full p-2 border border-gray-300 rounded">
+                    <th:block th:each="user : ${users}">
+                        <option th:value="${user.username}" th:text="${user.username}"></option>
+                    </th:block>
+                    <!-- Default selected option -->
+                    <option th:value="${taskforEdit.responsable}" th:text="${taskforEdit.responsable}"></option>
+                </select>
+            </div>
+
+            <!-- Segundo input: Horas Estimadas -->
+            <div class="w-1/2">
+                <label for="horas" class="block text-gray-700">Horas Estimadas</label>
+                <input type="number" th:value="${taskforEdit.horas}" id="horas" name="horas" class="w-full p-2 border border-gray-300 rounded" required>
+            </div>
+        </div>
+
+        <!-- Descripción -->
+        <div>
+            <label for="description" class="block text-gray-700">Descripción</label>
+            <textarea id="description" name="description" th:text="${taskforEdit.description}" rows="4" class="w-full p-2 border border-gray-300 rounded" required></textarea>
+        </div>
+
+        <!-- Botones -->
+        <div class="flex justify-end space-x-4">
+<!--            <button type="button" id="closeModal" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">Cancelar</button>-->
+            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Update</button>
+        </div>
+    </form>
+</div>
+<script>
+    // Obteniendo el ID de la tarea desde el atributo data
+    const taskId = document.querySelector('[data-task-id]').dataset.taskId;
+
+    const ModalForm = document.querySelector('form');
+
+    ModalForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        // Obtener valores de los campos del formulario
+        const nameField = document.getElementById('name').value;
+        const statusField = document.getElementById('status').value;
+        const proyectField = document.getElementById('proyect').value;
+        const responsableField = document.getElementById('user').value;
+        const horasField = document.getElementById('horas').value;
+        const descriptionField = document.getElementById('description').value;
+
+        // Validar campos requeridos
+        if (!nameField || !statusField || !horasField) {
+            alert('Por favor completa todos los campos requeridos.');
+            return;
+        }
+
+        // Construir el objeto de datos
+        const data = {
+            name: nameField,
+            projectName: proyectField,
+            description: descriptionField,
+            status: statusField,
+            responsable: responsableField,
+            horas: horasField
+        };
+    if (horasField>0) {
+        // Enviar la solicitud POST a la API
+        fetch(`/update/task/${[[${taskforEdit.id}]]}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.text(); // Cambia a `response.json()` si esperas un JSON
+                } else {
+                    throw new Error('Error al actualizar la tarea.');
+                }
+            })
+            .then(result => {
+                console.log('Tarea actualizada:', result);
+                // alert('Tarea actualizada correctamente');
+                const currentUrl = window.location.href;
+                const newUrl = currentUrl.split('/edit')[0];
+                window.location.href = newUrl;
+                // Opcional: cerrar modal o redirigir
+                ModalForm.reset();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }else{
+
+        alert("las horas deben  ser mayores a 0");
+    }
+    });
+</script>
+
+</body>
+</html>

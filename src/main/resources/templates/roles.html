@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/signup.js" defer></script>
+</head>
+<body>
+<!-- Dropdown para seleccionar usuario -->
+<select name="user" id="user" class="block w-full px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+  <option value="" disabled selected>Seleccione un usuario</option>
+  <th:block th:each="user : ${users}">
+    <option th:value="${user.id}" th:text="${user.username}"></option>
+  </th:block>
+</select>
+
+<!-- Dropdown para seleccionar rol -->
+<select name="role" id="role" class="block w-full px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+  <option value="" disabled selected>Seleccione un Rol</option>
+  <th:block th:each="role : ${roles}">
+    <option th:value="${role.id}" th:text="${role.roleName}"></option>
+  </th:block>
+</select>
+
+<!-- Botón -->
+<button class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+  Enviar
+</button>
+</body>
+
+</html>
