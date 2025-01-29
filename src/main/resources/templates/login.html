@@ -1,40 +1,58 @@
-<!DOCTYPE html>
-<html lang="en" >
+<!DOCTYPE HTML>
+<html
+        lang="en"
+        xmlns:th="http://www.thymeleaf.org">
 <head>
+  <title>Home</title>
   <meta charset="UTF-8">
-  <title>Login</title>
-  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-  <link rel="stylesheet" href="/css/style.css">
-  <script src="/js/signup.js" defer></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link th:href="@{/main.css}" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
+
 </head>
 <body>
 <body>
-    <section>
-        
-        <form action="/login" method="post">
-            <h1>Login</h1>
-            <div th:if="${session['SPRING_SECURITY_LAST_EXCEPTION'] != null}">
-                <p th:text="${session['SPRING_SECURITY_LAST_EXCEPTION'].message}"></p>
-            </div>
-            <div class="inputbox">
-                <ion-icon name="email-outline"></ion-icon>
-                <input name="username" id="username"type="name" required>
-                <label for="">username</label>
-            </div>
-            <div class="inputbox">
-                <ion-icon name="lock-closed-outline"></ion-icon>
-                <input name="password" type="password" id="password" required>
-                <label for="">Password</label>
-            </div>
-            <div class="register">
-                <p><a href="#">Forget Password ?</a></p>
-            </div>
-            <button>Log in</button>
-            <div class="register">
-                <p>Don't have a account ?<a href="/signup"> Register!!</a></p>
-            </div>
-        </form>
-    </section>
+<section class="min-h-screen flex items-center justify-center bg-gray-100">
+  <form action="/login" method="post" class="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Login</h1>
+    <div th:if="${session['SPRING_SECURITY_LAST_EXCEPTION'] != null}" class="mb-4">
+      <p th:text="${session['SPRING_SECURITY_LAST_EXCEPTION'].message}" class="text-red-500 text-sm"></p>
+    </div>
+    <div class="mb-4 relative">
+      <ion-icon name="mail-outline" class="absolute left-3 top-3 text-gray-400"></ion-icon>
+      <input
+              text="test"
+              name="username"
+              id="username"
+              type="text"
+              placeholder="Username"
+              required
+              class="pl-10 pr-4 py-2 border rounded-lg w-full text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+    </div>
+    <div class="mb-4 relative">
+      <ion-icon name="lock-closed-outline" class="absolute left-3 top-3 text-gray-400"></ion-icon>
+      <input
+              text="test"
+              name="password"
+              id="password"
+              type="password"
+              placeholder="Password"
+              required
+              class="pl-10 pr-4 py-2 border rounded-lg w-full text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+    </div>
+
+    <button type="submit"
+            class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
+      Log in
+    </button>
+    <div class="mt-6 text-center">
+      <p class="text-sm text-gray-600">Don't have an account?
+        <a href="/signup" class="text-blue-500 hover:underline">Register!!</a>
+      </p>
+    </div>
+  </form>
+</section>
+
 </body>
   

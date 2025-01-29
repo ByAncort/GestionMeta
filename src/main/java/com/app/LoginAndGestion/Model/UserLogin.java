@@ -1,14 +1,17 @@
 package com.app.LoginAndGestion.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Getter
 @Setter
+@Table(name = "user_login")
 public class UserLogin {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -17,8 +20,34 @@ public class UserLogin {
     private String email;
     private String password;
 
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "user_login_roles",
+            joinColumns = @JoinColumn(name = "user_login_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
+
+//    @ManyToMany(mappedBy = "responsables", cascade = {CascadeType.ALL})
+//    private Set<Task> tasks = new HashSet<>();
+
     @ManyToMany(fetch = FetchType.EAGER)
-    private Set<Role> roles;
+    @JoinTable(
+            name = "user_task",
+            joinColumns = @JoinColumn(name = "user_login_id"),
+            inverseJoinColumns = @JoinColumn(name = "task_id")
+    )
+    private Set<Task> tasks = new HashSet<>();
+
+
+    public void addRole(Role role) {
+        this.roles.add(role);
+    }
+
+    public void removeRole(Role role) {
+        this.roles.remove(role);
+    }
+
     // Constructor vacío para JPA
     public UserLogin() {}
 

@@ -6,70 +6,105 @@
   <title>Home</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.0/dist/css/tom-select.css">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.0/dist/js/tom-select.complete.min.js"></script>
 
   <link th:href="@{/main.css}" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
 
 </head>
-<body class="bg-slate-50 bg-slate-200	">
-<header class=" container mx-auto">
-  <h1 class="text-4xl font-bold p-8">Horas <span th:text="${filtro}"></span></h1>
-</header>
+<body>
+<div th:replace="fragments/nav/Slidebar :: slidebar"></div>
 
-
-<div class="sm:px-16 md:px-32 lg:px-64 rounded-xl bg-gray-50 dark:bg-gray-800">
-    <div class="flex justify-between items-center mb-4">
-        <div class="flex space-x-2">
-            <button type="button"
-                    class="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                Pendiente
-            </button>
-            <button type="button"
-                    class="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                Completado
-            </button>
-        </div>
-        <button id="openModal" class="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none my-2">
-            Agregar Tarea
-        </button>
-    </div>
-
-    <!-- Date range filter -->
-
-    <form method="get" class="flex items-center space-x-4 mb-4" >
-        <label for="startDate" class="text-sm text-gray-700 dark:text-gray-300">Fecha de inicio:</label>
-        <input type="date" id="startDate" name="comienzo" class="px-4 py-2 text-sm border rounded-md bg-white dark:bg-gray-700 dark:text-gray-300">
-
-        <label for="endDate" class="text-sm text-gray-700 dark:text-gray-300">Fecha de fin:</label>
-        <input type="date" id="endDate" name="fin" class="px-4 py-2 text-sm border rounded-md bg-white dark:bg-gray-700 dark:text-gray-300">
-
-        <button type="submit" class="px-4 py-2 text-white bg-green-500 rounded hover:bg-green-600 focus:outline-none">
-            Filtrar
-        </button>
-        <button  onclick="clearFilters()"
-                 type="button" class="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none">
-            Limpiar Filtro
-        </button>
-    </form>
-
-
-    <script>
-        function clearFilters() {
-
-            let currentUrl = window.location.href;
-            let newUrl = currentUrl.split('?comienzo')[0];
-            window.location.href = newUrl;
-        }
-    </script>
-
-
-    <!-- TaskTable fragment below the filter and buttons -->
-    <div th:replace="fragments/table :: TaskTable"></div>
+<div class="fixed top-4 right-4 z-50">
+    <div th:replace="fragments/alert/succes :: SuccessAlert"></div>
+</div>
+<div class="fixed top-4 right-4 z-50">
+    <div th:replace="fragments/alert/error :: ErrorAlert"></div>
 </div>
 
+<div class="m-6 px-32">
+    <header class=" container mx-auto">
+      <h1 class="text-4xl font-bold p-8">Horas <span th:text="${filtro}"></span></h1>
+    </header>
 
-<div th:replace="fragments/modal :: taskModal"></div>
+
+    <div class="rounded-xl bg-gray-50 dark:bg-gray-800">
+        <div class="flex justify-between items-center mb-4">
+            <div class="flex space-x-2">
+            </div>
+            <button id="openModal" class="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none my-2">
+                Agregar Tarea
+            </button>
+
+        </div>
+
+        <!-- Date range filter -->
+
+        <form method="get" class="flex flex-wrap items-center gap-4 mb-6">
+            <!-- Responsable -->
+            <div class="flex flex-col w-full sm:w-auto">
+                <label for="responsable" class="text-sm font-medium text-gray-700 dark:text-gray-300">Responsable:</label>
+                <select id="responsable" name="responsable" class="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <option >Seleccione un responsable</option>
+                    <th:block th:each="user : ${users}">
+                        <option th:value="${user.username}" th:text="${user.username}"></option>
+                    </th:block>
+
+                </select>
+            </div>
+
+            <!-- Fecha de inicio -->
+            <div class="flex flex-col w-full sm:w-auto">
+                <label for="startDate" class="text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de inicio:</label>
+                <input type="date" id="startDate" name="comienzo" class="block w-full px-4 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            </div>
+
+            <!-- Fecha de fin -->
+            <div class="flex flex-col w-full sm:w-auto">
+                <label for="endDate" class="text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de fin:</label>
+                <input type="date" id="endDate" name="fin" class="block w-full px-4 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            </div>
+
+            <!-- Botones -->
+            <div class="flex items-center gap-2">
+                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400">
+                    Filtrar
+                </button>
+                <button onclick="clearFilters()" type="button" class="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    Limpiar Filtro
+                </button>
+            </div>
+        </form>
+
+
+
+        <script>
+            function clearFilters() {
+
+                let currentUrl = window.location.href;
+                let newUrl = currentUrl.split('?comienzo')[0];
+                window.location.href = newUrl;
+            }
+        </script>
+
+
+        <!-- TaskTable fragment below the filter and buttons -->
+        <div th:replace="fragments/table :: TaskTable"></div>
+    </div>
+
+
+    <div th:replace="fragments/modal :: taskModal"></div>
+
 <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        new TomSelect("#user", {
+            plugins: ["checkbox_options"],
+            hideSelected: false,
+            persist: false
+        });
+    });
+
   // Referencia al formulario del modal
   const ModalForm = document.getElementById("modal-task");
 
@@ -77,51 +112,55 @@
     event.preventDefault();
 
     // Obtener valores de los campos del formulario
-    const nameField = document.getElementById('name').value;
-    const statusField = document.getElementById('status').value;
-    const proyectField = document.getElementById('proyect').value;
-    const responsableField = document.getElementById('user').value;
-    const horasField = document.getElementById('horas').value;
-    const descriptionField = document.getElementById('description').value;
+      const nameField = document.getElementById('name').value;
+      const statusField = document.getElementById('status').value;
+      const proyectField = document.getElementById('proyect').value;
+      const responsableField = document.getElementById('user');
+      const selectedValues = Array.from(responsableField.selectedOptions).map(option => option.value); // Obtener IDs de los responsables seleccionados
+      // console.log(selectedValues); // Ver los valores seleccionados
+      const horasField = document.getElementById('horas').value;
+      const descriptionField = document.getElementById('description').value;
 
     // Construir el objeto de datos
-    const data = {
-      name: nameField,
-      projectName: proyectField,
-      description: descriptionField,
-      creationDate: Date.now(),
-      last_update_date:Date.now(),
-      status: statusField,
-      responsable:responsableField,
-      horas: horasField
-
-    };
+      const data = {
+          name: nameField,
+          projectName: proyectField,
+          description: descriptionField,
+          creationDate: Date.now(),
+          last_update_date: Date.now(),
+          status: statusField,
+          responsablesIds: selectedValues,
+          horas: horasField
+      };
 
     // Enviar la solicitud POST a la API
-    fetch('/api/task', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-            .then(response => {
+      fetch('/api/task', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+      })
+          .then(response => {
               if (response.ok) {
-                return response.json();
+                  return response.json();
               } else {
-                throw new Error('Error al guardar la tarea.');
+                  throw new Error('Error al guardar la tarea.');
               }
-            })
-            .then(data => {
+          })
+          .then(data => {
               console.log('Tarea guardada:', data);
               // Cerrar el modal después de guardar
               document.getElementById("taskModal").classList.add("hidden");
               // Opcional: Limpiar el formulario
               ModalForm.reset();
-            })
-            .catch(error => {
+              window.location.reload();
+
+          })
+          .catch(error => {
+              throw new Error('Error al guardar la tarea.');
               console.error('Error:', error);
-            });
+          });
   });
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -136,6 +175,6 @@
     });
   });
 </script>
-
+</div>
 </body>
 </html>

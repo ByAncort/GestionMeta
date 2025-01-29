@@ -14,6 +14,18 @@ public class Role {
 
     private String roleName;  // Este es el nombre del rol, como "USER", "ADMIN", etc.
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
     // Constructor vacío para JPA
     public Role() {}
 

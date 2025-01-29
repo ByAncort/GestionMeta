@@ -10,4 +10,5 @@ import java.util.List;
 public interface RolRepository extends JpaRepository<Role, Long> {
     @Query(value = "SELECT * FROM role", nativeQuery = true)
     List<Role> findAll();
+
 }

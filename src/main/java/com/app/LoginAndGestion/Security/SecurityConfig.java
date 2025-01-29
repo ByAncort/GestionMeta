@@ -14,6 +14,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 
 @Configuration
 @EnableWebSecurity
@@ -51,21 +53,36 @@ public class SecurityConfig {
                 .formLogin(httpForm -> {
                     httpForm
                             .loginPage("/login")
-                            .permitAll();
-                    httpForm.defaultSuccessUrl("/proyectos", true);  // Asegúrate de que esté configurado correctamente
+                            .permitAll()
+                            .defaultSuccessUrl("/proyectos", true);
+                })
+                .logout(logout -> {
+                    logout
+                            .logoutUrl("/logout")
+                            .logoutSuccessUrl("/login?logout")
+                            .invalidateHttpSession(true)
+                            .deleteCookies("JSESSIONID");
                 })
                 .authorizeHttpRequests(registry -> {
-                    // Configurar rutas específicas antes de `anyRequest()`
-                    registry.requestMatchers("/api/task/update").hasRole("ADMIN");
-                    registry.requestMatchers("/update/**").hasRole("ADMIN");
+                    registry.requestMatchers("/signup", "/css/**", "/js/**").permitAll();
 
-                    // Rutas públicas
-                    registry.requestMatchers("/signup", "/proyectos/**", "/css/**", "/js/**").permitAll();
+                    registry.requestMatchers("/kanban").authenticated();
 
-                    // Regla global para cualquier otra solicitud
-                    registry.anyRequest().authenticated();
+                    registry.requestMatchers("/api/task/update", "/update/**", "/gestion/roles").hasRole("ADMIN");
+
+                    registry.anyRequest().hasRole("ADMIN");
                 })
+                .exceptionHandling(exception ->
+                        exception.accessDeniedHandler(accessDeniedHandler())
+                )
                 .build();
+    }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        AccessDeniedHandlerImpl handler = new AccessDeniedHandlerImpl();
+        handler.setErrorPage("/kanban");
+        return handler;
     }
 
 }

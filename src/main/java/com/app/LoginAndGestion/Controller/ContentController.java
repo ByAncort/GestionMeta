@@ -19,15 +19,6 @@ import java.util.List;
 @Controller
 public class ContentController {
 
-    @Autowired
-    private TaskService taskService;
-    @Autowired
-    private ProyectService proyectService;
-    @Autowired
-    private UserLoginService userLoginService;
-    @Autowired
-    private RolService rolService;
-
     @GetMapping("/login")
     public String login(){
         return "login";
@@ -36,28 +27,7 @@ public class ContentController {
     public String signup(){
         return "signup";
     }
-    @GetMapping("/dashboard")
-    public String index(Model model){
-        List<Task> tasks = taskService.obtenerTareas();
-        model.addAttribute("tasks", tasks);
-        return "index";
-    }
 
-
-    @GetMapping("/proyectos")
-    public String proyect(Model model){
-        List<Proyect> proyects =proyectService.obtenerProyects();
-        model.addAttribute("proyects", proyects);
-        return "proyect";
-    }
-    @GetMapping("/GestionRoles")
-    public String roles(Model model){
-
-        model.addAttribute("users",userLoginService.listUser());
-        model.addAttribute("roles", rolService.obtenerRoles());
-
-        return "roles";
-    }
 
 
 }

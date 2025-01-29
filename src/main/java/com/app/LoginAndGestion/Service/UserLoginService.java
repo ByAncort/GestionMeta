@@ -1,7 +1,9 @@
 package com.app.LoginAndGestion.Service;
 
+import com.app.LoginAndGestion.Model.Role;
 import com.app.LoginAndGestion.Model.Task;
 import com.app.LoginAndGestion.Model.UserLogin;
+import com.app.LoginAndGestion.Repository.RolRepository;
 import com.app.LoginAndGestion.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,7 +22,8 @@ import java.util.stream.Collectors;
 public class UserLoginService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
-
+    @Autowired
+    private RolRepository roleRepository;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<UserLogin> user = userRepository.findByUsername(username);
@@ -46,5 +49,17 @@ public class UserLoginService implements UserDetailsService {
     public List<UserLogin>  listUser(){return userRepository.findAll();}
     public UserLogin saveUser(UserLogin user) {
         return userRepository.save(user);
+    }
+    public void assignRoleToUser(Long userId, Long roleId) {
+        // Obtener el usuario
+        UserLogin user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        // Obtener el rol
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+        // Asignar el rol al usuario
+        user.addRole(role);
+        // Guardar los cambios
+        userRepository.save(user);
     }
 }

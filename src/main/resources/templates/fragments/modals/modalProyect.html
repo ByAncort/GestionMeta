@@ -1,0 +1,13 @@
+<div th:fragment="modalAddProyect" id="modal" class="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50 z-50 hidden">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+    <h2 class="text-xl font-semibold mb-4">Ingrese su nombre</h2>
+    <form id="modalForm">
+      <label for="name" class="block text-gray-700">Nombre:</label>
+      <input type="text" id="name" name="name" class="mt-2 p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500" placeholder="Escribe tu nombre" required>
+      <div class="mt-4 flex justify-end">
+        <button type="button" id="cancelButton" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">Cancelar</button>
+        <button type="submit" class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -19,7 +19,7 @@
                         class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
                         th:text="${task.name}">
                     </th>
-                    <td class="px-6 py-4" th:text="${task.responsable}"></td>
+                    <td class="px-6 py-4">responsable desavilitado</td>
                     <td class="px-6 py-4">
                             <span th:text="${task.status}"
                                   class="px-2 py-1 text-xs font-semibold rounded-lg"
@@ -56,22 +56,22 @@
                                     'Content-Type': 'application/json',
                                 },
                                 body: JSON.stringify({ id: taskId }) // Enviamos el id como JSON
-
                             })
                                 .then(response => {
                                     if (!response.ok) {
                                         throw new Error('Error en la solicitud');
                                     }
-                                    location.reload();
                                     return response.json(); // Si la respuesta es válida, se parsea como JSON
                                 })
                                 .then(data => {
                                     console.log('Tarea completada:', data);
                                     // Aquí puedes actualizar la UI o mostrar un mensaje de éxito
+                                    location.reload(); // Ahora se recarga la página después de procesar la respuesta
                                 })
                                 .catch(error => {
-                                    console.error('Error al completar la tarea:', error);
+                                    alert('Error al completar la tarea: '); // Mostrar el mensaje de error
                                 });
+
                         }
 
                     </script>

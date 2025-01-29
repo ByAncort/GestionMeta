@@ -13,24 +13,26 @@
 </head>
 <body>
 
-<div class="m-6">
-  <!-- Botón para abrir el modal -->
-  <button id="openModal" class="px-6 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 mb-5">Abrir Modal</button>
+<div th:replace="fragments/nav/Slidebar :: slidebar"></div>
 
-  <!-- Modal -->
-  <div id="modal" class="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50 z-50 hidden">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
-      <h2 class="text-xl font-semibold mb-4">Ingrese su nombre</h2>
-      <form id="modalForm">
-        <label for="name" class="block text-gray-700">Nombre:</label>
-        <input type="text" id="name" name="name" class="mt-2 p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500" placeholder="Escribe tu nombre" required>
-        <div class="mt-4 flex justify-end">
-          <button type="button" id="cancelButton" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">Cancelar</button>
-          <button type="submit" class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Guardar</button>
-        </div>
-      </form>
-    </div>
-  </div>
+<div class="fixed top-4 right-4 z-50">
+  <div th:replace="fragments/alert/succes :: SuccessAlert"></div>
+</div>
+<div class="fixed top-4 right-4 z-50">
+  <div th:replace="fragments/alert/error :: ErrorAlert"></div>
+</div>
+
+
+<div class="m-6 px-32">
+  <button id="openModal" class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded mb-4">
+    Agregar proyecto
+  </button>
+  <a href="/proyectos/all" class="bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded mb-4">
+    Todas las Task
+  </a>
+
+
+  <div th:replace="fragments/modals/modalProyect  ::  modalAddProyect"></div>
 
   <script>
     const ModalForm = document.getElementById("modalForm");
@@ -49,26 +51,25 @@
         },
         body: JSON.stringify(data)
       })
+              .then(response=>{
+                window.location.reload();
+              })
 
     });
 
-    // Obtener elementos
     const openModalButton = document.getElementById('openModal');
     const modal = document.getElementById('modal');
     const cancelButton = document.getElementById('cancelButton');
     const modalForm = document.getElementById('modalForm');
 
-    // Función para abrir el modal
     openModalButton.addEventListener('click', () => {
       modal.classList.remove('hidden');
     });
 
-    // Función para cerrar el modal
     cancelButton.addEventListener('click', () => {
       modal.classList.add('hidden');
     });
 
-    // Enviar formulario (puedes agregar tu lógica aquí)
     modalForm.addEventListener('submit', (event) => {
       event.preventDefault();
       const name = document.getElementById('name').value;
@@ -77,8 +78,8 @@
     });
   </script>
 
-
   <div th:replace="fragments/targetProyect :: target"></div>
+
 </div>
 
 

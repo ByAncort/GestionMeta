@@ -1,7 +1,12 @@
 server:
   error:
+    whitelabel:
+      enabled: false
     include-message: always
     include-binding-errors: always
+    path: /error
+  port: 9010
+  address: 192.168.1.254
 
 spring:
   datasource:
@@ -12,7 +17,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    #      ddl-auto: create-drop
+#          ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:

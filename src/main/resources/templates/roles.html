@@ -1,34 +1,80 @@
-<!DOCTYPE html>
-<html lang="en" >
+<!DOCTYPE HTML>
+<html
+        lang="en"
+        xmlns:th="http://www.thymeleaf.org">
 <head>
+  <title>Home</title>
   <meta charset="UTF-8">
-  <title>Login</title>
-  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-  <link rel="stylesheet" href="/css/style.css">
-  <script src="/js/signup.js" defer></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link th:href="@{/main.css}" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
+
 </head>
 <body>
-<!-- Dropdown para seleccionar usuario -->
-<select name="user" id="user" class="block w-full px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-  <option value="" disabled selected>Seleccione un usuario</option>
-  <th:block th:each="user : ${users}">
-    <option th:value="${user.id}" th:text="${user.username}"></option>
-  </th:block>
-</select>
 
-<!-- Dropdown para seleccionar rol -->
-<select name="role" id="role" class="block w-full px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-  <option value="" disabled selected>Seleccione un Rol</option>
-  <th:block th:each="role : ${roles}">
-    <option th:value="${role.id}" th:text="${role.roleName}"></option>
-  </th:block>
-</select>
+<div th:replace="fragments/nav/Slidebar :: slidebar"></div>
 
-<!-- Botón -->
-<button class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-  Enviar
-</button>
+<div class="fixed top-4 right-4 z-50">
+  <div th:replace="fragments/alert/succes :: SuccessAlert"></div>
+</div>
+<div class="fixed top-4 right-4 z-50">
+  <div th:replace="fragments/alert/error :: ErrorAlert"></div>
+</div>
+
+
+<div class="m-6 px-32">
+  <div class="w-2/3 mt-15 mx-auto bg-white rounded-lg shadow-xl p-6">
+    <h2 class="text-xl font-semibold mb-4 text-gray-900">Asignar Rol a Usuario</h2>
+    <form class="h-1/2 w-full" id="userForm">
+      <div class="mb-4">
+        <label for="userId" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select an user account</label>
+        <select id="userId" name="userId" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+          <option value="" disabled selected>Seleccione un usuario</option>
+          <th:block th:each="user : ${users}">
+            <option th:value="${user.id}" th:text="${user.username}"></option>
+          </th:block>
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label for="rol" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select a role type</label>
+        <select id="rol" name="roleId" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+          <option value="" disabled selected>Seleccione un rol</option>
+          <th:block th:each="role : ${roles}">
+            <option th:value="${role.id}" th:text="${role.roleName}"></option>
+          </th:block>
+        </select>
+      </div>
+
+      <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Enviar
+      </button>
+    </form>
+  </div>
+
+
+</div>
+<script>
+  document.getElementById('userForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+
+    // Obtener los valores seleccionados.
+    const userId = formData.get('userId');
+    const roleId = formData.get('roleId');
+
+
+    fetch('/'+userId+'/role/'+roleId+'', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+  });
+</script>
+
+
 </body>
 
 </html>
