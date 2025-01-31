@@ -10,6 +10,7 @@
   <link th:href="@{/main.css}" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
 
+
 </head>
 <body>
 
@@ -64,15 +65,27 @@
     const userId = formData.get('userId');
     const roleId = formData.get('roleId');
 
-
-    fetch('/'+userId+'/role/'+roleId+'', {
+    fetch('/' + userId + '/role/' + roleId, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       }
-    })
+    }).then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        alert("Error al asignar rol");
+        throw new Error('Error al guardar la tarea.');
+      }
+    }).then(data => {
+      alert("Rol asignado");
+      console.log(data);  // Aquí puedes ver la respuesta del servidor si la necesitas.
+    }).catch(error => {
+      console.error(error);
+    });
   });
 </script>
+
 
 
 </body>

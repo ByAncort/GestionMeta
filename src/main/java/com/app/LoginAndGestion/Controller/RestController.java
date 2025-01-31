@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,12 +35,16 @@ public class RestController {
 
     @PostMapping(value = "/api/task", consumes = "application/json", produces = "application/json")
     public Task createUser(@RequestBody TaskRequestDTO taskRequestDTO) {
+        Date date = new Date();
+
 
         Task task = new Task();
 
         task.setName(taskRequestDTO.getName());
         task.setStatus(taskRequestDTO.getStatus());
         task.setHoras(taskRequestDTO.getHoras());
+        task.setCreationDate(date);
+        task.setLastUpdateDate(date);
         task.setDescription(taskRequestDTO.getDescription());
         task.setProjectName(taskRequestDTO.getProjectName());
 

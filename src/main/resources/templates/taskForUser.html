@@ -45,11 +45,11 @@
                   th:each="task : ${tasks}"
                   th:if="${task.username == user.getUsername()}"
                   class="w-[300px] items-center flex-shrink-0 overflow-hidden rounded-lg bg-white shadow-xl  ring-2 ring-blue-500/50 m-1"
-                  style="width: 12rem;"
+                  style="width: 12rem;height: 9rem;"
           >
             <div class="p-4">
               <!-- Nombre de la tarea -->
-              <h3 class="text-l font-semibold text-gray-600" th:text="${task.name}"></h3>
+              <h3 class="text-lg font-semibold text-gray-600 truncate w-48" th:text="${task.name}"></h3>
 
               <p class="mt-2 text-sm text-gray-400" th:text="${task.status}">
 

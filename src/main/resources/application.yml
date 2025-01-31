@@ -6,7 +6,7 @@ server:
     include-binding-errors: always
     path: /error
   port: 9010
-  address: 192.168.1.254
+#  address: 192.168.1.254
 
 spring:
   datasource:

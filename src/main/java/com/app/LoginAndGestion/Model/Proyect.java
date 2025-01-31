@@ -11,6 +11,7 @@ public class Proyect {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
+    @Column(unique = true)
     private String name;
     @Temporal(TemporalType.TIMESTAMP)
     private Date creation_date;

@@ -68,6 +68,28 @@ public class TaskService {
     }
 
 
+    public Page<Task> AllTaskResponsablev2(String responsable, Pageable pageable, Date startDate, Date endDate) {
+        if (responsable == null && startDate == null && endDate == null) {
+            return taskRepository.findAll(pageable);
+        }
+
+        if (responsable != null && startDate == null && endDate == null) {
+            return taskRepository.findByResponsables(responsable, pageable);
+        }
+
+
+        if (responsable != null && startDate != null && endDate != null) {
+            return taskRepository.findByResponsablesAndCreationDateBetween(responsable, startDate, endDate, pageable);
+        }
+
+
+        if (responsable == null && startDate != null && endDate != null) {
+            return taskRepository.findByCreationDateBetween(startDate, endDate, pageable);
+        }
+
+        return taskRepository.findAll(pageable);
+    }
+
 
 //  Buscar task por proyect
     public Page<Task> FiltroXproyet(String projectName, Pageable pageable) {

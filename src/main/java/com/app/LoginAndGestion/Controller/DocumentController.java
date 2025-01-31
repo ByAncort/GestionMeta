@@ -30,7 +30,7 @@ public class DocumentController {
     @GetMapping("/download/excel/{name}/{rango}")
     public ResponseEntity<ByteArrayResource> downloadExcel(@PathVariable String name, @PathVariable String rango) throws IOException {
         List<Task> tasks = taskService.getTasksByDateRangeAndProjectName(name, rango);
-
+        System.out.println(tasks.toString());
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Proyectos_" + name);

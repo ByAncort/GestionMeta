@@ -16,10 +16,12 @@
                 <tr th:each="task : ${tasks}"
                     class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
                     <th scope="row"
-                        class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap"
-                        th:text="${task.name}">
+                        class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap overflow-hidden text-ellipsis max-w-xs"
+                    th:text="${task.name}"
+                    >
                     </th>
-                    <td class="px-6 py-4">responsable desavilitado</td>
+                    <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-semibold rounded-lg bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-200"
+                    >Temporalmente inhabitado</span></td>
                     <td class="px-6 py-4">
                             <span th:text="${task.status}"
                                   class="px-2 py-1 text-xs font-semibold rounded-lg"
@@ -30,7 +32,7 @@
                     <td class="px-6 py-4">
                         <span class="text-sm font-medium text-gray-700" th:text="${task.horas}">0</span>
                     </td>
-                    <td class="px-6 py-4" th:text="${task.creationDate}"></td>
+                    <td class="px-6 py-4" th:text="${#dates.format(task.creationDate, 'dd/MM/yyyy')}"></td>
                     <td class="px-6 py-4 text-right">
                         <a href="#" th:href="@{'/proyectos/' + ${filtro} + '/edit/' + ${task.id}}"
                            class="inline-block px-3 py-1 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">
@@ -150,10 +152,24 @@
             let currentUrl = window.location.href;
             let url = new URL(currentUrl);
             let pageParam = url.searchParams.get('page');
-            pageParam = pageParam ? parseInt(pageParam) : 1;
-            let nextPage = pageParam - 1;
-            url.searchParams.set('page', nextPage);
-            window.location.href = url.toString();
+            pageParam = pageParam ? parseInt(pageParam) : 0;
+
+            let customLabel = document.getElementById('prevButton');
+
+            if (pageParam > 0) {
+                let nextPage = pageParam - 1;
+                url.searchParams.set('page', nextPage);
+                window.location.href = url.toString();
+                if (pageParam ==0){
+                    url.searchParams.delete('page');
+                    window.location.href = url.toString();
+                }
+
+            }else if (pageParam > 1){
+                url.searchParams.delete('page');
+                window.location.href = url.toString();
+            }
+
         });
 
 

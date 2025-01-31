@@ -14,6 +14,12 @@
 
 </head>
 <body>
+<style>
+    .ts-control{
+        height: 2.5rem;
+    }
+
+</style>
 <div th:replace="fragments/nav/Slidebar :: slidebar"></div>
 
 <div class="fixed top-4 right-4 z-50">
@@ -24,7 +30,7 @@
 </div>
 
 <div class="m-6 px-32">
-    <header class=" container mx-auto">
+    <header class="container mx-auto">
       <h1 class="text-4xl font-bold p-8">Horas <span th:text="${filtro}"></span></h1>
     </header>
 
