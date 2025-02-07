@@ -14,23 +14,23 @@
 </head>
 <body>
 
-<div th:replace="fragments/nav/Slidebar :: slidebar"></div>
+<div th:replace="~{fragments/nav/Slidebar :: slidebar}"></div>
 
 <div class="fixed top-4 right-4 z-50">
-  <div th:replace="fragments/alert/succes :: SuccessAlert"></div>
+  <div th:replace="~{fragments/alert/succes :: SuccessAlert}"></div>
 </div>
 <div class="fixed top-4 right-4 z-50">
-  <div th:replace="fragments/alert/error :: ErrorAlert"></div>
+  <div th:replace="~{fragments/alert/error :: ErrorAlert}"></div>
 </div>
 
 
-<div class="m-6 px-32">
-  <div class="w-2/3 mt-15 mx-auto bg-white rounded-lg shadow-xl p-6">
-    <h2 class="text-xl font-semibold mb-4 text-gray-900">Asignar Rol a Usuario</h2>
+<div class="m-6 pl-16 pt-16 pb-16 lg:px-32">
+  <div class="w-full p-3 lg:w-2/3 lg:mt-15 mx-auto bg-white rounded-lg shadow-xl lg:p-6">
+    <h2 class="text-lg lg:text-xl font-semibold mb-4 text-gray-900">Asignar Rol a Usuario</h2>
     <form class="h-1/2 w-full" id="userForm">
       <div class="mb-4">
-        <label for="userId" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select an user account</label>
-        <select id="userId" name="userId" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+        <label for="userId" class="block mb-2 text-xs lg:text-sm font-medium text-gray-900 dark:text-white">Select an user account</label>
+        <select id="userId" name="userId" class="bg-gray-50 border border-gray-300 text-gray-900 text-xs lg:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
           <option value="" disabled selected>Seleccione un usuario</option>
           <th:block th:each="user : ${users}">
             <option th:value="${user.id}" th:text="${user.username}"></option>
@@ -39,8 +39,8 @@
       </div>
 
       <div class="mb-4">
-        <label for="rol" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select a role type</label>
-        <select id="rol" name="roleId" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+        <label for="rol" class="block mb-2 text-xs lg:text-sm font-medium text-gray-900 dark:text-white">Select a role type</label>
+        <select id="rol" name="roleId" class="bg-gray-50 border border-gray-300 text-gray-900 text-xs lg:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
           <option value="" disabled selected>Seleccione un rol</option>
           <th:block th:each="role : ${roles}">
             <option th:value="${role.id}" th:text="${role.roleName}"></option>
@@ -60,30 +60,36 @@
   document.getElementById('userForm').addEventListener('submit', function (event) {
     event.preventDefault();
     const formData = new FormData(event.target);
-
     // Obtener los valores seleccionados.
     const userId = formData.get('userId');
     const roleId = formData.get('roleId');
 
-    fetch('/' + userId + '/role/' + roleId, {
+    fetch(`/${userId}/role/${roleId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       }
-    }).then(response => {
-      if (response.ok) {
-        return response.json();
-      } else {
-        alert("Error al asignar rol");
-        throw new Error('Error al guardar la tarea.');
-      }
-    }).then(data => {
-      alert("Rol asignado");
-      console.log(data);  // Aquí puedes ver la respuesta del servidor si la necesitas.
-    }).catch(error => {
-      console.error(error);
+    })
+            .then(response => {
+              if (!response.ok) {
+                //throw new Error('Error al asignar rol');
+                alert("Rol asignado con éxito");
+                console.log("Respuesta del servidor:", data);
+
+
+              }
+              return response.json();
+            })
+            .then(data => {
+              alert("Rol asignado con éxito");
+              console.log("Respuesta del servidor:", data);
+            })
+            .catch(error => {
+              alert(error.message);
+              console.error("Error:", error);
+            });
     });
-  });
+
 </script>
 
 

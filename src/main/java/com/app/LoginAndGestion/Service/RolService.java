@@ -1,8 +1,6 @@
 package com.app.LoginAndGestion.Service;
 
 import com.app.LoginAndGestion.Model.Role;
-import com.app.LoginAndGestion.Model.Task;
-import com.app.LoginAndGestion.Model.UserLogin;
 import com.app.LoginAndGestion.Repository.RolRepository;
 import com.app.LoginAndGestion.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,15 +1,18 @@
 package com.app.LoginAndGestion.Controller;
 
+import com.app.LoginAndGestion.DTO.TaskDTO;
 import com.app.LoginAndGestion.DTO.TaskWithResponsableDTO;
 import com.app.LoginAndGestion.Model.Task;
-import com.app.LoginAndGestion.Model.UserLogin;
+import com.app.LoginAndGestion.Model.User;
 import com.app.LoginAndGestion.Repository.TaskRepository;
+import com.app.LoginAndGestion.Repository.TypeTaskRepository;
 import com.app.LoginAndGestion.Service.ProyectService;
 import com.app.LoginAndGestion.Service.TaskService;
 import com.app.LoginAndGestion.Service.UserLoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,6 +35,8 @@ public class ProyectoController {
     @Autowired
     private TaskRepository taskRepository;
     @Autowired
+    private TypeTaskRepository typeTaskRepository;
+    @Autowired
     private ProyectService proyectService;
 
 
@@ -43,12 +48,12 @@ public class ProyectoController {
     @GetMapping("/{filtro}/edit/{id}")
     public String editporId(@PathVariable String filtro, @PathVariable long id, Model model) {
         Optional<Task> taskOpt = taskService.findID(id);
-        List<UserLogin> userLogins = userLoginService.listUser();
+        List<User> users = userLoginService.listUser();
 
         if (taskOpt.isPresent()) {
 
             Task task = taskOpt.get();
-            model.addAttribute("users", userLogins);
+            model.addAttribute("users", users);
             model.addAttribute("taskforEdit", task);
             model.addAttribute("filtrodos", filtro);
             return "Detailtask";
@@ -61,8 +66,9 @@ public class ProyectoController {
 
 
     //    traer las task del proyecto seleccionado
-    @GetMapping("/{filtro}")
-    public String index(@PathVariable String filtro,
+    @GetMapping("/{ProjectName}")
+    public String index(
+                        @PathVariable String ProjectName,
                         @RequestParam(defaultValue = "0") int page,
                         @RequestParam(defaultValue = "10") int size,
                         @RequestParam(required = false)
@@ -70,18 +76,26 @@ public class ProyectoController {
                         @RequestParam(required = false)
                         @DateTimeFormat(pattern = "yyyy-MM-dd") Date fin,
                         @RequestParam(required = false) String responsable,
+                        @RequestParam(required = false) String estado,
                         Model model) {
         // Obtener la lista de tareas filtradas
-        Page<Task> taskPage;
+        Page<TaskDTO> taskPage;
+        if ("Seleccione un responsable".equals(responsable)){
+            responsable=null;
+        }
+        if ("Seleccione un estado".equals(estado)){
+            estado=null;
+        }
+//       (String projectName, String responsable, Pageable pageable, Date startDate, Date endDate, String status)
 
-        taskPage = taskService.AllTaskFilter(filtro, PageRequest.of(page, size), comienzo, fin);
+        taskPage = taskService.FilterFindTask(ProjectName, responsable, PageRequest.of(page, size), comienzo, fin, estado);
 
+        List<User> users = userLoginService.listUser();
 
-        List<UserLogin> userLogins = userLoginService.listUser();
-
-        model.addAttribute("users", userLogins);
-        model.addAttribute("filtro", filtro);
+        model.addAttribute("users", users);
+        model.addAttribute("filtro", ProjectName);
         model.addAttribute("tasks", taskPage.getContent());
+        model.addAttribute("tasktypes", typeTaskRepository.findAll());
         model.addAttribute("currentPage", taskPage.getNumber());
         model.addAttribute("totalPages", taskPage.getTotalPages());
         return "index";
@@ -92,19 +106,27 @@ public class ProyectoController {
                         @RequestParam(defaultValue = "0") int page,
                         @RequestParam(defaultValue = "10") int size,
                         @RequestParam(required = false)
-                        @DateTimeFormat(pattern = "yyyy-MM-dd") Date comienzo,
+                        @DateTimeFormat(pattern = "dd-mm-yyyy") Date comienzo,
                         @RequestParam(required = false)
-                        @DateTimeFormat(pattern = "yyyy-MM-dd") Date fin,
+                        @DateTimeFormat(pattern = "dd-mm-yyyy") Date fin,
+
                         @RequestParam(required = false) String responsable,
+                        @RequestParam(required = false) String estado,
                         Model model) {
         // Obtener la lista de tareas filtradas
-        Page<Task> taskPage;
+        Page<TaskDTO> taskPage;
 
-        taskPage = taskService.AllTaskResponsable(responsable, PageRequest.of(page, size), comienzo, fin);
+        if ("Seleccione un responsable".equals(responsable)){
+            responsable=null;
+        }
+        if ("Seleccione un estado".equals(estado)){
+            estado=null;
+        }
+        taskPage = taskService.FilterFindTaskAllproyect(responsable, PageRequest.of(page, size), comienzo, fin,estado);
 
-        List<UserLogin> userLogins = userLoginService.listUser();
+        List<User> users = userLoginService.listUser();
 
-        model.addAttribute("users", userLogins);
+        model.addAttribute("users", users);
         model.addAttribute("filtro", "All Task");
         model.addAttribute("tasks", taskPage.getContent());
         model.addAttribute("currentPage", taskPage.getNumber());

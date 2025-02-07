@@ -13,11 +13,20 @@ public class Proyect {
     private long id;
     @Column(unique = true)
     private String name;
+    private String last_name;
     @Temporal(TemporalType.TIMESTAMP)
     private Date creation_date;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date last_update_date;
+
+    public String getLast_name() {
+        return last_name;
+    }
+
+    public void setLast_name(String last_name) {
+        this.last_name = last_name;
+    }
 
     public long getId() {
         return id;

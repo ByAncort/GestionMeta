@@ -54,7 +54,7 @@ public class SecurityConfig {
                     httpForm
                             .loginPage("/login")
                             .permitAll()
-                            .defaultSuccessUrl("/proyectos", true);
+                            .defaultSuccessUrl("/proyectos/users", true);
                 })
                 .logout(logout -> {
                     logout
@@ -64,7 +64,7 @@ public class SecurityConfig {
                             .deleteCookies("JSESSIONID");
                 })
                 .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers("/signup", "/css/**", "/js/**").permitAll();
+                    registry.requestMatchers("/signup", "/css/**", "/js/**","/send-mail").permitAll();
 
                     registry.requestMatchers("/kanban").authenticated();
 

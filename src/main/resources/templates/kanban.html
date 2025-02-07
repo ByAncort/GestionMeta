@@ -12,13 +12,13 @@
 
 </head>
 <body>
-<div th:replace="fragments/nav/Slidebar :: slidebar"></div>
+<div th:replace="~{fragments/nav/Slidebar :: slidebar}"></div>
 
 <div class="fixed top-4 right-4 z-50">
-  <div th:replace="fragments/alert/succes :: SuccessAlert"></div>
+  <div th:replace="~{fragments/alert/succes :: SuccessAlert}"></div>
 </div>
 <div class="fixed top-4 right-4 z-50">
-  <div th:replace="fragments/alert/error :: ErrorAlert"></div>
+  <div th:replace="~{fragments/alert/error :: ErrorAlert}"></div>
 </div>
 
 <div class="m-6 mr-0 pl-12 lg:pl-32 sm:pl-24">
@@ -30,7 +30,7 @@
       <div class="w-full md:w-1/2 "> <!-- Cambiar w-full en pantallas pequeñas -->
         <h2 class="text-xl lg:text-2xl font-semibold">Pendiente</h2>
 
-        <div th:each="task : ${tasks}" th:if="${task.status == 'pendiente' and task.username==user.username}" class="bg-gray-100 shadow-xl rounded-xl p-4 w-52 lg:w-72 m-5">
+        <div th:each="task : ${tasks}" th:if="${task.status == 'pendiente' and task.username==user.username}" class="bg-gray-100  rounded-xl p-4 w-52 lg:w-72 m-5">
           <div class="flex justify-between items-center mb-2">
             <span class="text-sm font-semibold text-gray-700" th:text="${#dates.format(task.creationDate, 'dd/MM/yyyy')}">Tarea Pendiente</span>
             <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full" th:text="${task.status}">En Progreso</span>
@@ -48,7 +48,7 @@
       <div class="w-full md:w-1/2 "> <!-- Cambiar w-full en pantallas pequeñas -->
         <h2 class="text-xl lg:text-2xl font-semibold">Completada</h2>
 
-        <div th:each="task : ${tasks}" th:if="${task.status == 'Completada' and task.username==user.username}" class="bg-gray-100 shadow-xl rounded-xl p-4 w-52 lg:w-72 m-5">
+        <div th:each="task : ${tasks}" th:if="${task.status == 'Completada' and task.username==user.username}" class="bg-gray-100 rounded-xl p-4 w-52 lg:w-72 m-5">
           <div class="flex justify-between items-center mb-2">
             <span class="text-sm font-semibold text-gray-700" th:text="${#dates.format(task.creationDate, 'dd/MM/yyyy')}">Tarea Pendiente</span>
             <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full" th:text="${task.status}">En Progreso</span>

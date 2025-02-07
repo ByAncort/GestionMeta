@@ -8,9 +8,10 @@ public class TaskRequestDTO {
     private double horas;
     private String description;
     private String projectName;
+    private Long type;  // Aquí tienes el ID del TypeTask
     private List<Long> responsablesIds;
 
-
+    // Getters and Setters
     public String getName() {
         return name;
     }
@@ -49,6 +50,14 @@ public class TaskRequestDTO {
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;
+    }
+
+    public Long getType() {
+        return type;
+    }
+
+    public void setType(Long type) {
+        this.type = type;
     }
 
     public List<Long> getResponsablesIds() {

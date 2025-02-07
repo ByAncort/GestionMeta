@@ -1,14 +1,22 @@
 package com.app.LoginAndGestion.Service;
 
+import com.app.LoginAndGestion.DTO.TaskDTO;
+import com.app.LoginAndGestion.DTO.TaskRequestDTO;
 import com.app.LoginAndGestion.Model.Task;
-import com.app.LoginAndGestion.Model.UserLogin;
+import com.app.LoginAndGestion.Model.TypeTask;
+import com.app.LoginAndGestion.Model.User;
 import com.app.LoginAndGestion.Repository.TaskRepository;
+import com.app.LoginAndGestion.Repository.TypeTaskRepository;
 import com.app.LoginAndGestion.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
 @Service
@@ -17,6 +25,8 @@ public class TaskService {
     private TaskRepository taskRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private TypeTaskRepository typeTaskRepository;
 
 
     public List<Task> getTasksByProjectAndDateRange(String projectName, Date startDate, Date endDate) {
@@ -29,42 +39,53 @@ public class TaskService {
 
     public Task guardarTareaConResponsables(Task tarea, List<Long> responsablesIds) {
         Task tareaGuardada = taskRepository.save(tarea);
-        List<UserLogin> responsables = userRepository.findAllById(responsablesIds);
+        List<User> responsables = userRepository.findAllById(responsablesIds);
         System.out.println("Responsables: " + responsables);
         tareaGuardada.setResponsables(new HashSet<>(responsables));
         return taskRepository.save(tareaGuardada);
     }
 
-//  Buscar task por proyecto dentro de unas fechas
-    public Page<Task> AllTaskFilter(String projectName, Pageable pageable, Date startDate, Date endDate) {
-        if(startDate == null && endDate == null){
-            return taskRepository.findByProjectNameOrderByCreationDateDesc(projectName, pageable);
-        } else if (startDate!= null && endDate!=null){
-            return taskRepository.findByProjectNameAndCreationDateBetweenOrderByCreationDateDesc(projectName, pageable, startDate, endDate);
-        }
-        return taskRepository.findAll(pageable);
+    public Page<TaskDTO> FilterFindTask(String projectName, String responsable, Pageable pageable, Date startDate, Date endDate, String status) {
+        return taskRepository.findAllByFilters(projectName,responsable,pageable, startDate, endDate, status)
+                .map(TaskDTO::new);
+    }
+    public Page<TaskDTO> FilterFindTaskAllproyect(String responsable, Pageable pageable, Date startDate, Date endDate, String status) {
+
+        return taskRepository.findAllByFiltersAllProyect(responsable, startDate, endDate, status, pageable)
+                .map(TaskDTO::new);
     }
 
-    public Page<Task> AllTaskResponsable(String responsable, Pageable pageable, Date startDate, Date endDate) {
+    public Page<TaskDTO> FilterFindTaskByproyect(String ProjectName,String responsable, Pageable pageable, Date startDate, Date endDate, String status) {
+
+        return taskRepository.findAllByFiltersByProyect(responsable, startDate, endDate, status, ProjectName, pageable)
+                .map(TaskDTO::new);
+    }
+
+    public Page<TaskDTO> AllTaskResponsable(String responsable, Pageable pageable, Date startDate, Date endDate) {
         if (responsable == null && startDate == null && endDate == null) {
-            return taskRepository.findAll(pageable);
+            return taskRepository.findAll(pageable)
+                    .map(TaskDTO::new);
         }
 
         if (responsable != null && startDate == null && endDate == null) {
-            return taskRepository.findByResponsables(responsable, pageable);
+            return taskRepository.findByResponsables(responsable, pageable)
+                    .map(TaskDTO::new);
         }
 
 
         if (responsable != null && startDate != null && endDate != null) {
-            return taskRepository.findByResponsablesAndCreationDateBetween(responsable, startDate, endDate, pageable);
+            return taskRepository.findByResponsablesAndCreationDateBetween(responsable, startDate, endDate, pageable)
+                    .map(TaskDTO::new);
         }
 
 
         if (responsable == null && startDate != null && endDate != null) {
-            return taskRepository.findByCreationDateBetween(startDate, endDate, pageable);
+            return taskRepository.findByCreationDateBetween(startDate, endDate, pageable)
+                    .map(TaskDTO::new);
         }
 
-        return taskRepository.findAll(pageable);
+        return taskRepository.findAll(pageable)
+                .map(TaskDTO::new);
     }
 
 
@@ -118,12 +139,12 @@ public class TaskService {
 
         Task tareaExistente = optionalTask.get();
 
+        tareaExistente.setId(tareaExistente.getId());
         tareaExistente.setName(tareaActualizada.getName());
         tareaExistente.setDescription(tareaActualizada.getDescription());
-        tareaExistente.setResponsables(tareaActualizada.getResponsables());
         tareaExistente.setStatus(tareaActualizada.getStatus());
         tareaExistente.setProjectName(tareaActualizada.getProjectName());
-
+        tareaExistente.setHoras(tareaActualizada.getHoras());
         return taskRepository.save(tareaExistente);
     }
 
@@ -140,7 +161,6 @@ public class TaskService {
             throw new RuntimeException("Task not found with ID: " + taskId);
         }
     }
-    public List<Task> buscarPorNombre(String name){return taskRepository.findAllByProjectName(name);}
 
     public List<Task> getTasksByDateRangeAndProjectName(String name, String rango) {
         Date currentDate = new Date();
@@ -173,6 +193,38 @@ public class TaskService {
             return taskRepository.findAllByCreationDateBetweenAndProjectName(startDate, endDate, name);
         }
     }
+
+
+    public Task saveTaskFromDTO(TaskRequestDTO taskDTO) {
+        Date date = new Date();
+        TypeTask typeTask = typeTaskRepository.findById(taskDTO.getType())
+                .orElseThrow(() -> new RuntimeException("TypeTask no encontrado"));
+
+        // Creamos una nueva tarea
+        Task task = new Task();
+        task.setName(taskDTO.getName());
+        task.setStatus(taskDTO.getStatus());
+        task.setHoras(taskDTO.getHoras());
+        task.setCreationDate(date);
+        task.setDescription(taskDTO.getDescription());
+        task.setProjectName(taskDTO.getProjectName());
+        task.setType(typeTask);
+
+        // Asignamos responsables si los IDs son proporcionados
+        if (taskDTO.getResponsablesIds() != null && !taskDTO.getResponsablesIds().isEmpty()) {
+            Set<User> responsables = new HashSet<>();
+            for (Long responsableId : taskDTO.getResponsablesIds()) {
+                User responsable = userRepository.findById(responsableId)
+                        .orElseThrow(() -> new RuntimeException("Responsable no encontrado"));
+                responsables.add(responsable);
+            }
+            task.setResponsables(responsables);
+        }
+
+        // Guardamos la tarea
+        return taskRepository.save(task);
+    }
+
 }
 
 

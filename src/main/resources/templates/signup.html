@@ -48,6 +48,11 @@
 </section>
 
 <script>
+    function validarEmail(email) {
+        if (!email.endsWith('@metacontrol.cl')) {
+            alert("Email no es de la organización");
+        }
+    }
     const signupForm = document.getElementById("signupForm");
 
     signupForm.addEventListener('submit', (event) => {
@@ -78,7 +83,7 @@
                         // alert('User successfully registered');
                         location.href="/login";
                     } else {
-                        alert('There was an issue with the registration');
+                        validarEmail(email)
                     }
                 })
                 .catch(error => {

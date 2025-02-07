@@ -1,26 +1,27 @@
 package com.app.LoginAndGestion.Controller;
 
 import com.app.LoginAndGestion.DTO.TaskRequestDTO;
-import com.app.LoginAndGestion.Model.Proyect;
-import com.app.LoginAndGestion.Model.Role;
-import com.app.LoginAndGestion.Model.Task;
+import com.app.LoginAndGestion.DTO.TaskWithResponsableDTO;
+import com.app.LoginAndGestion.Model.*;
+import com.app.LoginAndGestion.Repository.TaskRepository;
+import com.app.LoginAndGestion.Repository.TypeTaskRepository;
+import com.app.LoginAndGestion.Repository.UserRepository;
 import com.app.LoginAndGestion.Service.ProyectService;
 import com.app.LoginAndGestion.Service.RolService;
 import com.app.LoginAndGestion.Service.TaskService;
 import com.app.LoginAndGestion.Service.UserLoginService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @org.springframework.web.bind.annotation.RestController
 public class RestController {
@@ -29,32 +30,37 @@ public class RestController {
     @Autowired
     private ProyectService proyectService;
     @Autowired
+    private UserRepository userRepository;
+    @Autowired
     private RolService rolService;
+    @Autowired
+    private TypeTaskRepository typeTaskRepository;
+    @Autowired
+    private TaskRepository taskRepository;
     @Autowired
     private UserLoginService userLoginService;
 
     @PostMapping(value = "/api/task", consumes = "application/json", produces = "application/json")
-    public Task createUser(@RequestBody TaskRequestDTO taskRequestDTO) {
-        Date date = new Date();
+    public ResponseEntity<?> createTask(@RequestBody TaskRequestDTO taskRequestDTO) {
+        try {
 
-
-        Task task = new Task();
-
-        task.setName(taskRequestDTO.getName());
-        task.setStatus(taskRequestDTO.getStatus());
-        task.setHoras(taskRequestDTO.getHoras());
-        task.setCreationDate(date);
-        task.setLastUpdateDate(date);
-        task.setDescription(taskRequestDTO.getDescription());
-        task.setProjectName(taskRequestDTO.getProjectName());
-
-        return taskService.guardarTareaConResponsables(task, taskRequestDTO.getResponsablesIds());
-
+            Task savedTask = taskService.saveTaskFromDTO(taskRequestDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedTask);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("error", e.getMessage()));
+        }
     }
 
     @PostMapping(value = "/api/proyect/add", consumes = "application/json", produces = "application/json")
-    public Proyect createUser(@RequestBody Proyect proyect) {
-        return proyectService.GuardarProyect(proyect);
+    public Proyect createUser(@RequestBody Map<String, String> requestData) {
+        String name = requestData.get("name");
+        String lastName = requestData.get("lastName");
+
+        Proyect nuevoProyecto=new Proyect();
+        nuevoProyecto.setName(name);
+        nuevoProyecto.setLast_name(lastName);
+        return proyectService.GuardarProyect(nuevoProyecto);
     }
 
     @PostMapping(value = "/api/role/add", consumes = "application/json", produces = "application/json")
@@ -95,7 +101,12 @@ public class RestController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: " + e.getMessage());
         }
     }
+    @PostMapping(value = "/view/task/for/")
+    public void getTask(){
+//        List<Task>  tkd= taskRepository.findAllByResponsable("test");
+//        tkd.toString();
 
+    }
 
 
 }

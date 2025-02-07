@@ -13,26 +13,28 @@
 </head>
 <body>
 
-<div th:replace="fragments/nav/Slidebar :: slidebar"></div>
+<div th:replace="~{fragments/nav/Slidebar :: slidebar}"></div>
 
 <div class="fixed top-4 right-4 z-50">
-  <div th:replace="fragments/alert/succes :: SuccessAlert"></div>
+  <div th:replace="~{fragments/alert/succes :: SuccessAlert}"></div>
 </div>
 <div class="fixed top-4 right-4 z-50">
-  <div th:replace="fragments/alert/error :: ErrorAlert"></div>
+  <div th:replace="~{fragments/alert/error :: ErrorAlert}"></div>
 </div>
 
 
-<div class="m-6 px-32">
-  <button id="openModal" class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded mb-4">
-    Agregar proyecto
-  </button>
-  <a href="/proyectos/all" class="bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded mb-4">
-    Todas las Task
-  </a>
+<div class="m-6 pl-16 pt-16 pb-16 lg:px-32">
+  <div class="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4">
+    <button id="openModal" class="text-xs lg:text-lg bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
+      Agregar proyecto
+    </button>
+    <a href="/proyectos/all" class="text-xs text-center lg:text-lg bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded">
+      Todas las Task
+    </a>
+  </div>
 
 
-  <div th:replace="fragments/modals/modalProyect  ::  modalAddProyect"></div>
+  <div th:replace="~{fragments/modals/modalProyect  ::  modalAddProyect}"></div>
 
   <script>
     const ModalForm = document.getElementById("modalForm");
@@ -40,10 +42,13 @@
     ModalForm.addEventListener('submit', (event) => {
       event.preventDefault();
       const nameField = document.getElementById("name").value;
-      const data={
-        name: nameField
-      }
+      const lastNamefield = document.getElementById("lastName").value;
 
+      const data={
+        name : nameField,
+        lastName : lastNamefield
+      }
+      console.log(data);
       fetch('/api/proyect/add', {
         method: 'POST',
         headers: {
@@ -73,12 +78,13 @@
     modalForm.addEventListener('submit', (event) => {
       event.preventDefault();
       const name = document.getElementById('name').value;
-      alert(`Nombre guardado: ${name}`);
+      const lastname = document.getElementById('lastName').value;
+      alert(`Nombre guardado: ${name} ${lastname}`);
       modal.classList.add('hidden');
     });
   </script>
 
-  <div th:replace="fragments/targetProyect :: target"></div>
+  <div th:replace="~{fragments/targetProyect :: target}"></div>
 
 </div>
 

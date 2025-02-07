@@ -1,6 +1,5 @@
 package com.app.LoginAndGestion.Model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +11,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Table(name = "user_login")
-public class UserLogin {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
@@ -51,10 +50,10 @@ public class UserLogin {
     }
 
     // Constructor vacío para JPA
-    public UserLogin() {}
+    public User() {}
 
     // Constructor con parámetros
-    public UserLogin(String username, String email, String password) {
+    public User(String username, String email, String password) {
         this.username = username;
         this.email = email;
         this.password = password;

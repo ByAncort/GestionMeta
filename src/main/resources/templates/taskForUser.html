@@ -1,100 +1,91 @@
 <!DOCTYPE HTML>
-<html
-        lang="en"
-        xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <title>Home</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <link th:href="@{/main.css}" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
-
 </head>
 <body>
-<div th:replace="fragments/nav/Slidebar :: slidebar"></div>
+<div th:replace="~{fragments/nav/Slidebar :: slidebar}"></div>
 
+<!-- Alertas -->
 <div class="fixed top-4 right-4 z-50">
-  <div th:replace="fragments/alert/succes :: SuccessAlert"></div>
+  <div th:replace="~{fragments/alert/succes :: SuccessAlert}"></div>
 </div>
 <div class="fixed top-4 right-4 z-50">
-  <div th:replace="fragments/alert/error :: ErrorAlert"></div>
+  <div th:replace="~{fragments/alert/error :: ErrorAlert}"></div>
 </div>
 
-
-<div class="m-6 px-32">
-
-  <div class="p-2">
+<!-- Contenido principal -->
+<div class="m-6 pl-4 sm:pl-16 pt-16 pb-16 lg:px-32">
+  <div class="p-2 pl-6">
     <div>
       <!-- Iteración de usuarios -->
-      <div class="flex mb-4" th:each="user : ${users}">
-        <!-- Contenedor lateral -->
-        <div class="mr-1  overflow-hidden rounded-lg bg-white shadow-lg" style="
-          min-width: 10rem;
-         ">
-          <div class="p-6">
-            <!-- Nombre del usuario -->
-            <h3 class="text-xl font-semibold text-gray-800" th:text="${user.getUsername()}">Nombre del usuario</h3>
+      <div class="flex flex-col sm:flex-row mb-4" th:each="user : ${users}">
+        <!-- Contenedor lateral (nombre del usuario) -->
+        <div class=" lg:w-48 sm:mr-4 bg-blue-100 mb-4 sm:mb-0 overflow-hidden rounded-lg bg-white shadow-lg sm:min-w-[10rem]">
+          <div class="p-4 sm:p-6">
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-800" th:text="${user.getUsername()}">Nombre del usuario</h3>
           </div>
         </div>
 
         <!-- Contenedor de tareas -->
-        <div class="flex w-4/5 space-x-4 overflow-x-auto scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-gray-200">
-          <!-- Iteración de tareas -->
-          <div
-                  th:each="task : ${tasks}"
-                  th:if="${task.username == user.getUsername()}"
-                  class="w-[300px] items-center flex-shrink-0 overflow-hidden rounded-lg bg-white shadow-xl  ring-2 ring-blue-500/50 m-1"
-                  style="width: 12rem;height: 9rem;"
-          >
-            <div class="p-4">
-              <!-- Nombre de la tarea -->
-              <h3 class="text-lg font-semibold text-gray-600 truncate w-48" th:text="${task.name}"></h3>
+        <div class="flex-1 overflow-x-auto scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-gray-200">
+          <div class="flex pl-6  space-x-4 mt-1 mb-1">
+            <!-- Iteración de tareas -->
+            <div
+                    th:each="task : ${tasks}"
+                    th:if="${task.username == user.getUsername()}"
+                    class="w-48 sm:w-56 md:w-64 flex-shrink-0 overflow-hidden rounded-lg bg-white shadow-xl ring-2 ring-blue-500/50 p-4"
+            >
+              <div>
+                <!-- Nombre de la tarea -->
+                <span th:text="${task.status}"
+                      class="px-2 py-1 text-xs font-semibold rounded-lg"
+                      th:classappend="${task.status == 'Completada' ? 'bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-200' :
+                                                   task.status == 'En Progreso' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-800 dark:text-yellow-200' :
+                                                   'bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-200'}"></span>
 
-              <p class="mt-2 text-sm text-gray-400" th:text="${task.status}">
-
-              </p>
-            </div>
-            <div class="flex items-center justify-between border-t border-gray-200 p-4">
-              <!-- Responsable -->
-<!--              <span class="text-xs text-gray-500" th:text="'Asignado a: ' + ${task.responsable}+' '">-->
-<!--              Asignado a: Juan Pérez-->
-<!--            </span>-->
-              <!-- Botón para detalles -->
-              <a
-                      class="text-xs text-blue-500 hover:text-blue-700  ml-2"
-                      th:href="@{'/proyectos/'+${task.projectName}+'/edit/' + ${task.id}}"
-                      th:text="'Ver detalles'"
-              >
-                Ver detalles
-              </a>
+                <h4 class="text-base sm:text-lg font-semibold text-gray-600 break-words" th:text="${task.name}"></h4>
+                <!-- Estado de la tarea -->
+<!--                <p class="mt-2 text-sm text-gray-400" th:text="${task.status}"></p>-->
+              </div>
+              <div class="flex items-center justify-between border-t border-gray-200 pt-2 mt-2">
+                <!-- Botón para detalles -->
+                <a
+                        class="text-xs sm:text-sm text-blue-500 hover:text-blue-700"
+                        th:href="@{'/proyectos/'+${task.projectName}+'/edit/' + ${task.id}}"
+                        th:text="'Ver detalles'"
+                >
+                  Ver detalles
+                </a>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <style>/* Aplica el estilo solo a elementos con overflow-x */
+<!-- Estilos personalizados para el scrollbar -->
+<style>
   .overflow-x-auto::-webkit-scrollbar {
     height: 6px;
   }
-
   .overflow-x-auto::-webkit-scrollbar-track {
     background: #e5e7eb; /* gris claro */
     border-radius: 10px;
   }
-
   .overflow-x-auto::-webkit-scrollbar-thumb {
-    background: linear-gradient(#3b82f6,#5c9aff);
+    background: linear-gradient(#3b82f6, #5c9aff);
     border-radius: 10px;
   }
-
   .overflow-x-auto::-webkit-scrollbar-thumb:hover {
     background: #2563eb; /* azul más oscuro al pasar el mouse */
   }
-  </style>
-
-</div>
+</style>
 </body>
 </html>

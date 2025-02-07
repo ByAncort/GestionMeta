@@ -11,72 +11,84 @@
 </head>
 <body>
 
-<div th:replace="fragments/nav/Slidebar :: slidebar"></div>
+<div th:replace="~{fragments/nav/Slidebar :: slidebar}"></div>
 
 <div class="fixed top-4 right-4 z-50">
-  <div th:replace="fragments/alert/succes :: SuccessAlert"></div>
+  <div th:replace="~{fragments/alert/succes :: SuccessAlert}"></div>
 </div>
 <div class="fixed top-4 right-4 z-50">
-  <div th:replace="fragments/alert/error :: ErrorAlert"></div>
+  <div th:replace="~{fragments/alert/error :: ErrorAlert}"></div>
 </div>
 
-<div class="m-6 px-32">
+<div class="m-6 pl-16 pt-16 pb-16 lg:px-32">
 
   <div class="w-24">
     <h1 class="text-4xl font-bold p-8">Report</h1>
   </div>
 
   <form id="FormReport" class="space-y-6">
-    <!-- Select Proyecto -->
-    <div class="relative">
-      <label for="userId" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Seleccione un Proyecto</label>
-      <select id="userId" name="userId" class="mt-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-        <option value="all">Todos los proyectos</option>
-        <th:block th:each="proyect : ${proyects}">
-          <option th:value="${proyect.name}" th:text="${proyect.name}"></option>
-        </th:block>
-      </select>
-    </div>
-
-    <!-- Rango de meses -->
-    <div class="relative">
-      <label for="months-range-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Selecciona el rango de meses</label>
-      <input id="months-range-input" type="range" value="1" min="1" max="4" step="1" class="mt-2 w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 focus:ring-2 focus:ring-blue-500">
-
-      <!-- Etiquetas de rango -->
-      <div class="flex justify-between mt-2">
-        <span class="text-sm text-gray-500 dark:text-gray-400">Todo</span>
-        <span class="text-sm text-gray-500 dark:text-gray-400">1 Mes</span>
-        <span class="text-sm text-gray-500 dark:text-gray-400">3 Meses</span>
-        <span class="text-sm text-gray-500 dark:text-gray-400">6 Meses</span>
-
+    <!-- Contenedor principal para los elementos en horizontal -->
+    <div class="flex flex-col lg:flex-row lg:items-end lg:space-x-4 space-y-4 lg:space-y-0">
+      <!-- Select Proyecto -->
+      <div class="flex-1">
+        <label for="userId" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Seleccione un Proyecto</label>
+        <select id="userId" name="userId" class="mt-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+          <option value="all">Todos los proyectos</option>
+          <th:block th:each="proyect : ${proyects}">
+            <option th:value="${proyect.name}" th:text="${proyect.name}"></option>
+          </th:block>
+        </select>
       </div>
+
+      <!-- Fecha de inicio -->
+      <div class="flex-1">
+        <label for="startDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de inicio:</label>
+        <input type="date" id="startDate" name="startDate"
+               class="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 text-xs lg:text-sm">
+      </div>
+
+      <div class="flex-1">
+        <label for="endDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de fin:</label>
+        <input type="date" id="endDate" name="endDate"
+               class="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500 text-xs lg:text-sm">
+      </div>
+
     </div>
-    <button type="submit" class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
-      Descargar informe
-    </button>
 
+    <!-- Botón de descargar informe -->
+    <div class="flex justify-end">
+      <button type="submit" class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
+        Descargar informe
+      </button>
+    </div>
   </form>
-
   <script>
-    document.getElementById('FormReport').addEventListener('submit', function (event) {
-      event.preventDefault();  // Evitar el comportamiento predeterminado de envío
+    // Capturar el formulario por su ID
+    const form = document.getElementById('FormReport');
 
-      // Capturar el valor del rango
-      const rangeInput = document.getElementById("months-range-input");
-      const value = rangeInput.value;
 
-      // Capturar el valor del proyecto
-      const formData = new FormData(event.target);
-      const proyect = formData.get('userId');
+    form.addEventListener('submit', function (event) {
 
-      console.log("Selected project:", proyect);
-      console.log("Selected range value:", value);
+      event.preventDefault();
 
-      // Redirigir a la URL con los parámetros del proyecto y el valor del rango
-      window.location.href = '/proyectos/download/excel/' + proyect + '/' + value;
+
+      const userId = document.getElementById('userId').value;
+      const startDate = document.getElementById('startDate').value;
+      const endDate = document.getElementById('endDate').value;
+
+
+      console.log('Proyecto seleccionado:', userId);
+      console.log('Fecha de inicio:', startDate);
+      console.log('Fecha de fin:', endDate);
+
+      const url = 'proyectos/download/excel/' + userId + '?comienzo=' + startDate + '&fin=' + endDate;
+
+      // Si deseas abrir en una nueva pestaña, usa window.open:
+      window.open(url, '_blank');
     });
   </script>
+
+
 
 </div>
 

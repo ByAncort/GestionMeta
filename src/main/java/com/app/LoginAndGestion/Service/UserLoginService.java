@@ -1,14 +1,12 @@
 package com.app.LoginAndGestion.Service;
 
 import com.app.LoginAndGestion.Model.Role;
-import com.app.LoginAndGestion.Model.Task;
-import com.app.LoginAndGestion.Model.UserLogin;
+import com.app.LoginAndGestion.Model.User;
 import com.app.LoginAndGestion.Repository.RolRepository;
 import com.app.LoginAndGestion.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,7 +24,7 @@ public class UserLoginService implements UserDetailsService {
     private RolRepository roleRepository;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<UserLogin> user = userRepository.findByUsername(username);
+        Optional<User> user = userRepository.findByUsername(username);
 
         if (user.isPresent()) {
             var userObj = user.get();
@@ -36,7 +34,7 @@ public class UserLoginService implements UserDetailsService {
                     .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRoleName()))  // Asumiendo que Role tiene el nombre 'roleName'
                     .collect(Collectors.toList());
 
-            return User.builder()
+            return org.springframework.security.core.userdetails.User.builder()
                     .username(userObj.getUsername())
                     .password(userObj.getPassword())
                     .authorities(authorities)  // Establecer las autoridades (roles)
@@ -46,13 +44,13 @@ public class UserLoginService implements UserDetailsService {
         }
     }
 
-    public List<UserLogin>  listUser(){return userRepository.findAll();}
-    public UserLogin saveUser(UserLogin user) {
+    public List<User>  listUser(){return userRepository.findAll();}
+    public User saveUser(User user) {
         return userRepository.save(user);
     }
     public void assignRoleToUser(Long userId, Long roleId) {
         // Obtener el usuario
-        UserLogin user = userRepository.findById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         // Obtener el rol
         Role role = roleRepository.findById(roleId)

@@ -1,47 +1,52 @@
-package com.app.LoginAndGestion.Model;
+package com.app.LoginAndGestion.DTO;
 
-import jakarta.persistence.*;
-import lombok.Data;
+import com.app.LoginAndGestion.Model.Task;
+import com.app.LoginAndGestion.Model.TypeTask;
+import com.app.LoginAndGestion.Model.User;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-@Entity
-@Data
-@Table(name = "task")
-public class Task {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class TaskDTO {
     private Long id;
-
     private String name;
-
-    @Column(name = "creation_date")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date creationDate;
-
-    @Column(name = "last_update_date")
-    @Temporal(TemporalType.TIMESTAMP)
     private Date lastUpdateDate;
-
     private String status;
     private double horas;
     private String description;
     private String projectName;
+    private Set<String> responsables;
+    private Set<String> mails;
+    private String type;
 
-    @ManyToOne
-    @JoinColumn(name = "type_task_id")
-    private TypeTask type;
+    public TaskDTO(Task task) {
+        this.id = task.getId();
+        this.name = task.getName();
+        this.creationDate = task.getCreationDate();
+        this.lastUpdateDate = task.getLastUpdateDate();
+        this.status = task.getStatus();
+        this.horas = task.getHoras();
+        this.description = task.getDescription();
+        this.projectName = task.getProjectName();
+        this.responsables = task.getResponsables().stream()
+                .map(User::getUsername)
+                .collect(Collectors.toSet());
+        this.mails = task.getResponsables().stream()
+                .map(User::getEmail)
+                .collect(Collectors.toSet());
+        this.type = (task.getType() != null) ? task.getType().getName() : "Desconocido";
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
-    @JoinTable(
-            name = "user_task",
-            joinColumns = @JoinColumn(name = "task_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_login_id")
-    )
-    private Set<User> responsables = new HashSet<>();
+    }
+
+    public Set<String> getMails() {
+        return mails;
+    }
+
+    public void setMails(Set<String> mails) {
+        this.mails = mails;
+    }
 
     public Long getId() {
         return id;
@@ -65,6 +70,14 @@ public class Task {
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Date getLastUpdateDate() {
@@ -107,19 +120,11 @@ public class Task {
         this.projectName = projectName;
     }
 
-    public TypeTask getType() {
-        return type;
-    }
-
-    public void setType(TypeTask type) {
-        this.type = type;
-    }
-
-    public Set<User> getResponsables() {
+    public Set<String> getResponsables() {
         return responsables;
     }
 
-    public void setResponsables(Set<User> responsables) {
+    public void setResponsables(Set<String> responsables) {
         this.responsables = responsables;
     }
 }

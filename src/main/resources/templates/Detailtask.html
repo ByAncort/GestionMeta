@@ -11,17 +11,17 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body>
-<div th:replace="fragments/nav/Slidebar :: slidebar"></div>
+<div th:replace="~{fragments/nav/Slidebar :: slidebar}"></div>
 
 <div class="fixed top-4 right-4 z-50">
-    <div th:replace="fragments/alert/succes :: SuccessAlert"></div>
+    <div th:replace="~{fragments/alert/succes :: SuccessAlert}"></div>
 </div>
 <div class="fixed top-4 right-4 z-50">
-    <div th:replace="fragments/alert/error :: ErrorAlert"></div>
+    <div th:replace="~{fragments/alert/error :: ErrorAlert}"></div>
 </div>
 
 
-<div class="m-6 px-32">
+<div class="ml-12 lg:m-6 lg:px-32">
 
 <div class="bg-white p-8 rounded-lg pt-8" data-task-id="${taskforEdit.id}">
     <h2 class="text-xl font-semibold mb-4">Detalles Tarea <span th:text="${taskforEdit.id}"></span></h2>
@@ -29,16 +29,12 @@
         <!-- Nombre -->
         <div>
             <label for="name" class="block text-gray-700">Nombre de la Tarea</label>
-<!--            <input type="text" id="name" name="name" class="w-full p-2 border border-gray-300 rounded"-->
-<!--                   th:value="${taskforEdit.name}" required>-->
             <textarea id="name" name="name"
                       class="w-full p-2 border border-gray-300 rounded resize-none h-16"
                       rows="1" oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';"
                       th:text="${taskforEdit.name}"
                       required disabled>
-
                 </textarea>
-
         </div>
 
         <div class="flex space-x-4">
@@ -69,12 +65,16 @@
 <!--                    </th:block>-->
 <!--                </select>-->
 <!--            </div>-->
+
+
             <div class="w-1/2">
                 <label for="user" class="block text-gray-700">Responsable</label>
                 <select id="user" name="user" multiple class="w-full  rounded-lg bg-gray-50 focus:ring-blue-500 shadow-sm appearance-none"
-                        data-tom-select required disabled>
+                        data-tom-select required >
                     <th:block th:each="user : ${users}">
-                        <option th:value="${user.id}" th:text="${user.username}"></option>
+                        <option th:value="${user.id}" th:text="${user.username}"
+                                th:selected="${taskforEdit.responsables.contains(user)}"
+                        ></option>
                     </th:block>
                 </select>
             </div>
@@ -82,20 +82,20 @@
             <!-- Segundo input: Horas Estimadas -->
             <div class="w-1/2">
                 <label for="horas" class="block text-gray-700">Horas Estimadas</label>
-                <input type="number" th:value="${taskforEdit.horas}" id="horas" name="horas" class="w-full p-2 border border-gray-300 rounded" required>
+                <input type="number" th:value="${taskforEdit.horas}" id="horas" name="horas" class="w-full p-2 border border-gray-300 rounded" step="any" required>
             </div>
         </div>
 
         <!-- Descripción -->
         <div>
             <label for="description" class="block text-gray-700">Descripción</label>
-            <textarea id="description" name="description" th:text="${taskforEdit.description}" rows="4" class="w-full p-2 border border-gray-300 rounded" required></textarea>
+            <textarea id="description" name="description" th:text="${taskforEdit.description}" rows="4" class="w-full p-2 border border-gray-300 rounded" ></textarea>
         </div>
 
         <!-- Botones -->
         <div class="flex justify-end space-x-4">
 <!--            <button type="button" id="closeModal" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">Cancelar</button>-->
-            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Update</button>
+            <button type="submit" class=" px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Update</button>
         </div>
     </form>
 </div>
@@ -120,7 +120,11 @@
         const nameField = document.getElementById('name').value;
         const statusField = document.getElementById('status').value;
         const proyectField = document.getElementById('proyect').value;
-        const responsableField = document.getElementById('user').value;
+        const user = document.getElementById('user').value;
+        console.log(user +"lista user")
+        const responsableField = Array.from(document.getElementById('user').selectedOptions)
+            .map(option => option.value);
+        console.log(responsableField +"lista responsables");
         const horasField = document.getElementById('horas').value;
         const descriptionField = document.getElementById('description').value;
 
@@ -136,6 +140,7 @@
             projectName: proyectField,
             description: descriptionField,
             status: statusField,
+            // lastUpdateDate:new Date().toLocaleDateString(),
             responsable: responsableField,
             horas: horasField
         };
