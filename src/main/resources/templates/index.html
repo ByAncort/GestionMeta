@@ -28,7 +28,9 @@
 <div class="fixed top-4 right-4 z-50">
     <div th:replace="~{fragments/alert/error :: ErrorAlert}"></div>
 </div>
-
+<div th:if="${message}" class="bg-green-500 text-white p-4 rounded mb-4">
+    <p th:text="${message}"></p>
+</div>
 <div class="m-6 pl-16 lg:px-32">
     <header class="container mx-auto">
       <h1 class="text-3xl lg:text-4xl font-bold lg:p-8">Horas <span th:text="${filtro}"></span></h1>
@@ -66,9 +68,9 @@
                 <select id="estado" name="estado"
                         class="block p-2 text-gray-900 border border-gray-300 rounded-lg  focus:ring-blue-500
                         focus:border-blue-500 w-40 lg:w-full  text-xs lg:text-sm">
-                        <option>Seleccione un estado</option>
-                        <option value="Completada" >Completada</option>
-                        <option value="pendiente">pendiente</option>
+                    <th:block th:each="type : ${kanbanType}">
+                        <option th:value="${type.name}" th:text="${type.name}"></option>
+                    </th:block>
                 </select>
             </div>
 
@@ -145,7 +147,7 @@
       const responsableField = document.getElementById('user');
       const selectedValues = Array.from(responsableField.selectedOptions).map(option => option.value); // Obtener IDs de los responsables seleccionados
       // console.log(selectedValues); // Ver los valores seleccionados
-      const horasField = document.getElementById('horas').value;
+      // const horasField = document.getElementById('horas').value;
       const descriptionField = document.getElementById('description').value;
 
     // Construir el objeto de datos
@@ -158,7 +160,7 @@
           type:tipo,
           status: statusField,
           responsablesIds: selectedValues,
-          horas: horasField
+          // horas: horasField
       };
 
 

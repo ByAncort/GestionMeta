@@ -1,7 +1,6 @@
 package com.app.LoginAndGestion.Controller;
 
 import com.app.LoginAndGestion.DTO.TaskRequestDTO;
-import com.app.LoginAndGestion.DTO.TaskWithResponsableDTO;
 import com.app.LoginAndGestion.Model.*;
 import com.app.LoginAndGestion.Repository.TaskRepository;
 import com.app.LoginAndGestion.Repository.TypeTaskRepository;
@@ -11,19 +10,17 @@ import com.app.LoginAndGestion.Service.RolService;
 import com.app.LoginAndGestion.Service.TaskService;
 import com.app.LoginAndGestion.Service.UserLoginService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.*;
 
-@org.springframework.web.bind.annotation.RestController
+@Controller
 public class RestController {
     @Autowired
     private TaskService taskService;
@@ -67,29 +64,32 @@ public class RestController {
     public Role registrarRole(@RequestBody Role role){return rolService.saveRole(role);}
     @PostMapping("/{userId}/role/{roleId}")
     public ResponseEntity<?> assignRole(@PathVariable Long userId, @PathVariable Long roleId) {
-        userLoginService.assignRoleToUser(userId, roleId);
-        return ResponseEntity.ok("Rol asignado correctamente");
-    }
-    @PostMapping(value = "/api/task/update", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<?> updateTask(@RequestBody Map<String, Long> request) {
-        Long id = request.get("id");
-        Map<String, String> response = new HashMap<>();
-
-        if (id == null) {
-            response.put("errorMessage", "ID is required");
-            response.put("errorDescription", "Please provide a valid task ID.");
-            return ResponseEntity.badRequest().body(response);
+        try {
+            userLoginService.assignRoleToUser(userId, roleId);
+            return ResponseEntity.ok().body(new HashMap<String, String>() {{
+                put("message", "Rol asignado correctamente");
+            }});
+        }catch (Exception e){
+            return ResponseEntity.ok().body(new HashMap<String, String>() {{
+                put("message", e.getMessage());
+            }});
         }
 
+    }
+
+
+
+
+    @PostMapping(value = "/task/update/{id}")
+    public ResponseEntity<?> updateTask(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             Task updatedTask = taskService.UpdateStep(id);
-            return ResponseEntity.ok(updatedTask);
-        } catch (RuntimeException e) {
-            response.put("errorMessage", e.getMessage());
-            response.put("errorDescription", "The task with the provided ID could not be found.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.ok("Tarea actualizada correctamente");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: " + e.getMessage());
         }
     }
+
 
 
     @PostMapping(value = "/update/task/{id}")
@@ -101,12 +101,24 @@ public class RestController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: " + e.getMessage());
         }
     }
-    @PostMapping(value = "/view/task/for/")
-    public void getTask(){
-//        List<Task>  tkd= taskRepository.findAllByResponsable("test");
-//        tkd.toString();
+    @PostMapping("/update-task/{id}")
+    public ResponseEntity<?> updateTask(@PathVariable long id, @RequestBody Map<String, Object> task){
+        taskService.UpdateTask(id, task);
+        return ResponseEntity.ok("Tarea actualizada correctamente");
+    }
+    @PostMapping("/add/add-task-line/{idtask}")
+    public ResponseEntity<?> addTaskLine(@PathVariable long idtask, @RequestBody Map<String, Object> taskLine){
+       taskService.addTaskLine(idtask,taskLine);
+       return ResponseEntity.ok("Subtarea agregada correctamente");
 
     }
+
+    @PostMapping(value = "/updateTaskStatus/{idTarea}/{status}")
+    public ResponseEntity<?> getTask(@PathVariable long idTarea, @PathVariable String status) {
+        taskService.updateStepTask(idTarea, status);
+        return ResponseEntity.ok("Tarea actualizada correctamente");
+    }
+
 
 
 }

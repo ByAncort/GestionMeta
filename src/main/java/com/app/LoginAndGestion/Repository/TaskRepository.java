@@ -57,12 +57,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             @Param("inicio") Date startDate,
             @Param("fin") Date endDate,
             @Param("status") String status);
-    //       String projectName,
-    //       String responsable,
-    //       Pageable pageable,
-    //       Date startDate,
-    //       Date endDate,
-    //       String status
+
 
     @Query("SELECT t FROM Task t " +
             "JOIN t.responsables r " +
@@ -104,5 +99,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             @Param("project") String project,
             @Param("inicio") Date startDate,
             @Param("fin") Date endDate);
+
 
 }

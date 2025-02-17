@@ -12,7 +12,7 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String roleName;  // Este es el nombre del rol, como "USER", "ADMIN", etc.
+    private String roleName;
 
     public Long getId() {
         return id;
@@ -37,4 +37,5 @@ public class Role {
     public String getRoleName() {
         return roleName;
     }
+
 }

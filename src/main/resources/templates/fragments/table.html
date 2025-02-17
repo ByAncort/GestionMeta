@@ -8,7 +8,7 @@
                     <th scope="col" class="px-6 py-3">Responsable</th>
                     <th scope="col" class="px-6 py-3">Estado</th>
                     <th scope="col" class="px-6 py-3">tipo tarea</th>
-                    <th scope="col" class="px-6 py-3">horas</th>
+<!--                    <th scope="col" class="px-6 py-3">horas</th>-->
                     <th scope="col" class="px-6 py-3">Fecha de Creación</th>
                     <th scope="col" class="px-6 py-3">Acciones</th>
 <!--                    <th scope="col" class="px-6 py-3">Tipo</th>-->
@@ -25,10 +25,11 @@
                     >
                     </th>
                     <td class="px-6 py-4 w-auto max-w-3xs">
-                        <div class="flex gap-1 overflow-x-auto max-w-[200px] whitespace-nowrap scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+                        <div class="flex gap-1 overflow-x-auto whitespace-nowrap scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
+                        style="max-width: 10rem; ">
                             <span th:each="responsable : ${task.responsables}"
-                                  class="px-2 py-1 text-xs font-semibold rounded-lg bg-indigo-500 text-white dark:bg-red-800 dark:text-red-200">
-                                <span th:text="${responsable}"></span>
+                                  class="px-2 py-1 text-xs font-semibold rounded-lg bg-indigo-500 text-white dark:bg-red-800 dark:text-red-200 mb-2">
+                                <span th:text="${responsable.username}"></span>
                             </span>
                         </div>
                     </td>
@@ -44,9 +45,9 @@
                             <span th:text="${task.type}"
                                   class="px-2 py-1 text-xs font-semibold rounded-lg bg-indigo-500 text-white dark:bg-green-800 dark:text-green-200"></span>
                     </td>
-                    <td class="px-6 py-4">
-                        <span class="text-sm font-medium text-gray-700" th:text="${task.horas}">0</span>
-                    </td>
+<!--                    <td class="px-6 py-4">-->
+<!--                        <span class="text-sm font-medium text-gray-700" th:text="${task.horas}">0</span>-->
+<!--                    </td>-->
                     <td class="px-6 py-4" th:text="${#dates.format(task.creationDate, 'dd/MM/yyyy')}"></td>
                     <td class="px-6 py-4 text-right">
                         <a href="#" th:href="@{'/proyectos/' + ${filtro} + '/edit/' + ${task.id}}"
@@ -62,31 +63,19 @@
 <!--                    <td class="px-6 py-4" th:text="${task.type}"></td>-->
 
                     <script>
-                        function completeTask(taskId) {
+                        async function completeTask(taskId) {
                             console.log("id a actualizar: " + taskId);
-
-                            fetch('/api/task/update', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({ id: taskId }) // Enviamos el id como JSON
-                            })
-                                .then(response => {
-                                    if (!response.ok) {
-                                        throw new Error('Error en la solicitud');
-                                    }
-                                    return response.json(); // Si la respuesta es válida, se parsea como JSON
-                                })
-                                .then(data => {
-                                    console.log('Tarea completada:', data);
-                                    // Aquí puedes actualizar la UI o mostrar un mensaje de éxito
-                                    location.reload(); // Ahora se recarga la página después de procesar la respuesta
-                                })
-                                .catch(error => {
-                                    alert('Error al completar la tarea: '); // Mostrar el mensaje de error
-                                });
-
+                            const response = await fetch(`/task/update/${taskId}`, {
+                                method: 'POST'
+                            });
+                            if (response.ok) {
+                                const data = await response.text();
+                                alert(data);
+                                location.reload();
+                            } else {
+                                const errorData = await response.text();
+                                alert(errorData);
+                            }
                         }
 
                     </script>
@@ -172,5 +161,20 @@
 
 
     </script>
-
+    <style>
+        .overflow-x-auto::-webkit-scrollbar {
+            height: 6px;
+        }
+        .overflow-x-auto::-webkit-scrollbar-track {
+            background: #e5e7eb; /* gris claro */
+            border-radius: 10px;
+        }
+        .overflow-x-auto::-webkit-scrollbar-thumb {
+            background: linear-gradient(#3b82f6, #5c9aff);
+            border-radius: 10px;
+        }
+        .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+            background: #2563eb; /* azul más oscuro al pasar el mouse */
+        }
+    </style>
 </div>

@@ -1,6 +1,8 @@
 package com.app.LoginAndGestion.Service;
 
 import com.app.LoginAndGestion.DTO.TaskDTO;
+import com.app.LoginAndGestion.DTO.TaskLineDTO;
+import com.app.LoginAndGestion.Model.User;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DocumentService {
@@ -49,11 +52,20 @@ public class DocumentService {
                 row.createCell(2).setCellValue(task.getCreationDate() != null ? task.getCreationDate().toString() : "N/A");
                 row.createCell(3).setCellValue(task.getLastUpdateDate() != null ? task.getLastUpdateDate().toString() : "N/A");
                 row.createCell(4).setCellValue(task.getStatus() != null ? task.getStatus() : "N/A");
-                row.createCell(5).setCellValue(task.getHoras());
+                double horas= 0;
+                for(TaskLineDTO line : task.getTaskLines()){
+                    horas+=line.getHours();
+                }
+                row.createCell(5).setCellValue(horas);
                 row.createCell(6).setCellValue(task.getDescription() != null ? task.getDescription() : "N/A");
                 row.createCell(7).setCellValue(task.getProjectName() != null ? task.getProjectName() : "N/A");
-                row.createCell(8).setCellValue(task.getResponsables() != null ? String.join(", ", task.getResponsables()) : "N/A");
-                row.createCell(9).setCellValue(task.getType() != null ? task.getType() : "N/A");
+                row.createCell(8).setCellValue(
+                        task.getResponsables() != null
+                                ? task.getResponsables().stream() // Convertir Set<User> a Stream<User>
+                                .map(User::getUsername)    // Mapear cada User a su nombre de usuario (String)
+                                .collect(Collectors.joining(", ")) // Unir los nombres con ", "
+                                : "N/A" // Si task.getResponsables() es nulo
+                );                row.createCell(9).setCellValue(task.getType() != null ? task.getType() : "N/A");
 
             }
 

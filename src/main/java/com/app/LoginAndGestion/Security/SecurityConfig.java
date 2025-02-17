@@ -64,9 +64,9 @@ public class SecurityConfig {
                             .deleteCookies("JSESSIONID");
                 })
                 .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers("/signup", "/css/**", "/js/**","/send-mail").permitAll();
+                    registry.requestMatchers("/signup", "/css/**", "/js/**","/send-mail/**","/proyectos/users").permitAll();
 
-                    registry.requestMatchers("/kanban").authenticated();
+                    registry.requestMatchers("/kanban","/updateTaskStatus/**").authenticated();
 
                     registry.requestMatchers("/api/task/update", "/update/**", "/gestion/roles").hasRole("ADMIN");
 

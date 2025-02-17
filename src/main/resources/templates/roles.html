@@ -64,19 +64,12 @@
     const userId = formData.get('userId');
     const roleId = formData.get('roleId');
 
-    fetch(`/${userId}/role/${roleId}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
+      fetch(`/${userId}/role/${roleId}`, {
+        method: 'POST'
+      })
             .then(response => {
               if (!response.ok) {
-                //throw new Error('Error al asignar rol');
-                alert("Rol asignado con éxito");
-                console.log("Respuesta del servidor:", data);
-
-
+                throw new Error('Rol asignado');
               }
               return response.json();
             })
@@ -85,10 +78,11 @@
               console.log("Respuesta del servidor:", data);
             })
             .catch(error => {
-              alert(error.message);
+              alert("Hubo un error al asignar el rol");
               console.error("Error:", error);
             });
-    });
+
+  });
 
 </script>
 

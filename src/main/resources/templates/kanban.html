@@ -24,48 +24,63 @@
 <div class="m-6 mr-0 pl-12 lg:pl-32 sm:pl-24">
 
   <div class="container mx-auto p-4">
-
-    <div class="flex flex-nowrap gap-8 overflow-y-auto min-w-2xl">
-      <!-- Columna Pendiente -->
-      <div class="w-full md:w-1/2 "> <!-- Cambiar w-full en pantallas pequeñas -->
-        <h2 class="text-xl lg:text-2xl font-semibold">Pendiente</h2>
-
-        <div th:each="task : ${tasks}" th:if="${task.status == 'pendiente' and task.username==user.username}" class="bg-gray-100  rounded-xl p-4 w-52 lg:w-72 m-5">
-          <div class="flex justify-between items-center mb-2">
+    <div class="flex flex-nowrap gap-8 min-w-2xl">
+      <div th:each="type : ${kanbanType}" th:if="${type.name != 'Completada'}" class="w-full md:w-1/3"
+           th:attr="ondrop='drop(event, \'' + ${type.name} + '\')'" ondragover="allowDrop(event)">
+        <h2 class="text-lg lg:text-2xl font-semibold" th:text="${type.name}">Pendiente</h2>
+        <div th:id="${type.name}" class="p-2 rounded-lg h-screen">
+          <div th:each="task : ${tasks}"
+               th:if="${task.status == type.name and task.username == user.username}"
+               class="bg-gray-100 m-2 rounded-xl p-4 w-52 lg:w-72"
+               th:attr="draggable='true', data-id=${task.id}" ondragstart="drag(event)">
             <span class="text-sm font-semibold text-gray-700" th:text="${#dates.format(task.creationDate, 'dd/MM/yyyy')}">Tarea Pendiente</span>
             <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full" th:text="${task.status}">En Progreso</span>
-          </div>
-          <h3 class="text-l lg:text-lg font-semibold text-gray-900" th:text="${task.name}">Implementar API de usuarios</h3>
-          <p class="text-sm text-gray-600 mt-1" th:text="${task.description}">Desarrollar los endpoints necesarios para la autenticación y gestión de usuarios.</p>
-          <div class="flex items-center mt-4">
-            <img class="w-8 h-8 rounded-full border border-gray-300" src="https://i.pravatar.cc/40" alt="Avatar">
-            <span class="text-sm text-gray-500 ml-2" th:text="'Asignado a '+${task.username}">Asignado a Juan Pérez</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Columna Completa -->
-      <div class="w-full md:w-1/2 "> <!-- Cambiar w-full en pantallas pequeñas -->
-        <h2 class="text-xl lg:text-2xl font-semibold">Completada</h2>
-
-        <div th:each="task : ${tasks}" th:if="${task.status == 'Completada' and task.username==user.username}" class="bg-gray-100 rounded-xl p-4 w-52 lg:w-72 m-5">
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-sm font-semibold text-gray-700" th:text="${#dates.format(task.creationDate, 'dd/MM/yyyy')}">Tarea Pendiente</span>
-            <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full" th:text="${task.status}">En Progreso</span>
-          </div>
-          <h3 class="text-l lg:text-lg font-semibold text-gray-900 " th:text="${task.name}">Implementar API de usuarios</h3>
-          <p class="text-sm text-gray-600 mt-1" th:text="${task.description}">Desarrollar los endpoints necesarios para la autenticación y gestión de usuarios.</p>
-          <div class="flex items-center mt-4">
-            <img class="w-8 h-8 rounded-full border border-gray-300" src="https://i.pravatar.cc/40" alt="Avatar">
-            <span class="text-sm text-gray-500 ml-2" th:text="'Asignado a '+${task.username}">Asignado a Juan Pérez</span>
+            <h3 class="text-l lg:text-lg font-semibold text-gray-900" th:text="${task.name}">Implementar API de usuarios</h3>
+            <p class="text-sm text-gray-600 mt-1" th:text="${task.description}">Desarrollar los endpoints necesarios para la autenticación y gestión de usuarios.</p>
+            <div class="flex items-center mt-4">
+              <img class="w-8 h-8 rounded-full border border-gray-300" src="https://i.pravatar.cc/40" alt="Avatar">
+              <span class="text-sm text-gray-500 ml-2" th:text="'Asignado a ' + ${task.username}">Asignado a Juan Pérez</span>
+              <a class="text-xs sm:text-sm text-blue-500 hover:text-blue-700"
+                      th:href="@{'/proyectos/'+${task.projectName}+'/edit/' + ${task.id}}"
+                      th:text="'  Ver detalles'">
+                Ver detalles
+              </a>
+            </div>
           </div>
         </div>
       </div>
     </div>
-
-
-
   </div>
+
+  <script>
+    function allowDrop(event) {
+      event.preventDefault();
+    }
+
+    function drag(event) {
+      event.dataTransfer.setData("text", event.target.getAttribute("data-id"));
+    }
+
+    function drop(event, newStatus) {
+      event.preventDefault();
+
+      let taskId = event.dataTransfer.getData("text");
+      let taskElement = document.querySelector(`[data-id='${taskId}']`);
+
+      if (taskElement) {
+        let dropZone = document.getElementById(newStatus);
+        dropZone.appendChild(taskElement);
+
+        fetch(`/updateTaskStatus/${taskId}/${newStatus}`, {
+          method: "POST"
+        })
+                .then(response => response.json())
+                .then(data => console.log("Estado actualizado:", data))
+                .catch(error => console.error("Error:", error));
+      }
+    }
+  </script>
+
 
 
 </div>

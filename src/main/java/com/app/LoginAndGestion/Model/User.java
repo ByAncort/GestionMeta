@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -58,7 +59,18 @@ public class User {
         this.email = email;
         this.password = password;
     }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id); // Comparar por ID
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id); // Usar ID para el hashCode
+    }
     public long getId() {
         return id;
     }

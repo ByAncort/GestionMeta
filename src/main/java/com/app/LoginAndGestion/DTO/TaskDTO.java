@@ -1,6 +1,7 @@
 package com.app.LoginAndGestion.DTO;
 
 import com.app.LoginAndGestion.Model.Task;
+import com.app.LoginAndGestion.Model.TaskLine;
 import com.app.LoginAndGestion.Model.TypeTask;
 import com.app.LoginAndGestion.Model.User;
 
@@ -17,9 +18,10 @@ public class TaskDTO {
     private double horas;
     private String description;
     private String projectName;
-    private Set<String> responsables;
-    private Set<String> mails;
     private String type;
+    private Set<User> responsables;
+    private Set<String> mails;
+    private Set<TaskLineDTO> taskLines;
 
     public TaskDTO(Task task) {
         this.id = task.getId();
@@ -30,14 +32,26 @@ public class TaskDTO {
         this.horas = task.getHoras();
         this.description = task.getDescription();
         this.projectName = task.getProjectName();
-        this.responsables = task.getResponsables().stream()
-                .map(User::getUsername)
-                .collect(Collectors.toSet());
+//        this.responsables = task.getResponsables().stream()
+//                .map(User::getUsername)
+//                .collect(Collectors.toSet());
+        this.responsables = task.getResponsables(); // Esto ya es un Set<User>
         this.mails = task.getResponsables().stream()
                 .map(User::getEmail)
                 .collect(Collectors.toSet());
         this.type = (task.getType() != null) ? task.getType().getName() : "Desconocido";
+        this.taskLines = task.getTaskLines().stream()
+                .map(TaskLineDTO::new)
+                .collect(Collectors.toSet());
 
+    }
+
+    public Set<TaskLineDTO> getTaskLines() {
+        return taskLines;
+    }
+
+    public void setTaskLines(Set<TaskLineDTO> taskLines) {
+        this.taskLines = taskLines;
     }
 
     public Set<String> getMails() {
@@ -120,11 +134,11 @@ public class TaskDTO {
         this.projectName = projectName;
     }
 
-    public Set<String> getResponsables() {
+    public Set<User> getResponsables() {
         return responsables;
     }
 
-    public void setResponsables(Set<String> responsables) {
+    public void setResponsables(Set<User> responsables) {
         this.responsables = responsables;
     }
 }

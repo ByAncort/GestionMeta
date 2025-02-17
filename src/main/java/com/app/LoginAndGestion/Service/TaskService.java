@@ -1,8 +1,10 @@
 package com.app.LoginAndGestion.Service;
 
 import com.app.LoginAndGestion.DTO.TaskDTO;
+import com.app.LoginAndGestion.DTO.TaskLineDTO;
 import com.app.LoginAndGestion.DTO.TaskRequestDTO;
 import com.app.LoginAndGestion.Model.Task;
+import com.app.LoginAndGestion.Model.TaskLine;
 import com.app.LoginAndGestion.Model.TypeTask;
 import com.app.LoginAndGestion.Model.User;
 import com.app.LoginAndGestion.Repository.TaskRepository;
@@ -13,10 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 
 @Service
@@ -33,9 +31,10 @@ public class TaskService {
         return taskRepository.findAllByCreationDateBetweenAndProjectName(startDate, endDate, projectName);
     }
 
-    public Optional<Task> findID(long id) {
-        return taskRepository.findById(id);
+    public Optional<TaskDTO> findID(long id) {
+        return taskRepository.findById(id).map(TaskDTO::new);
     }
+
 
     public Task guardarTareaConResponsables(Task tarea, List<Long> responsablesIds) {
         Task tareaGuardada = taskRepository.save(tarea);
@@ -129,6 +128,65 @@ public class TaskService {
         return AllTaskDatesBeteew(pageable,startDate,endDate);
     }
 
+    public TaskLine addTaskLine(Long id,Map<String, Object> taskLine) {
+        Optional<Task> t =taskRepository.findById(id);
+        if (!t.isPresent()) {
+            throw new RuntimeException("Task not found");
+        }
+        Task task= t.get();
+        String subtarea = (String) taskLine.get("subtarea");
+        Double horas = Double.valueOf(taskLine.get("horas").toString());
+
+        TaskLine taskLineNew= new TaskLine();
+        taskLineNew.setComment(subtarea);
+        taskLineNew.setHorasTask(horas);
+        taskLineNew.setTask(task);
+
+        task.getTaskLines().add(taskLineNew);
+        taskRepository.save(task);
+        System.out.println(task.getTaskLines().toString());
+        return taskLineNew;
+
+    }
+
+
+    public Task UpdateTask(Long idTask, Map<String, Object>  tarea ){
+        Date date = new Date();
+        Optional<Task> optionalTask =taskRepository.findById(idTask);
+        Task TareaActual =optionalTask.get();
+        List<Integer> idTareas = new ArrayList<>();
+        if(tarea.containsKey("responsable")) {
+            Object responsableObj = tarea.get("responsable");
+            for (Object id : (List<?>) responsableObj) {
+                idTareas.add(Integer.parseInt(id.toString()));
+            }
+        }
+
+
+
+        if(tarea.containsKey("categorias")) {
+            Object categoriaOBj = tarea.get("categorias");
+            System.out.println(categoriaOBj);
+        }
+
+        if(idTareas!= null ) {
+            Set<User> responsablesActualizados = new HashSet<>();
+            for (Integer ids : idTareas) {
+                Optional<User> exi= userRepository.findById(Long.valueOf(ids));
+                exi.ifPresent(responsablesActualizados::add);
+            }
+            TareaActual.setResponsables(responsablesActualizados);
+        }
+
+
+        TareaActual.setLastUpdateDate(date);
+        TareaActual.setDescription((String) tarea.get("description"));
+        TareaActual.setName((String) tarea.get("name"));
+        TareaActual.setStatus((String) tarea.get("status"));
+
+        return taskRepository.save(TareaActual);
+
+    }
 
     public Task updateTask(Long id, Task tareaActualizada) {
         Optional<Task> optionalTask = taskRepository.findById(id);
@@ -138,30 +196,47 @@ public class TaskService {
         }
 
         Task tareaExistente = optionalTask.get();
-
-        tareaExistente.setId(tareaExistente.getId());
         tareaExistente.setName(tareaActualizada.getName());
         tareaExistente.setDescription(tareaActualizada.getDescription());
         tareaExistente.setStatus(tareaActualizada.getStatus());
         tareaExistente.setProjectName(tareaActualizada.getProjectName());
         tareaExistente.setHoras(tareaActualizada.getHoras());
+        tareaExistente.setResponsables(tareaActualizada.getResponsables());
         return taskRepository.save(tareaExistente);
     }
 
     public Task UpdateStep(Long taskId) {
         Optional<Task> optionalTask = taskRepository.findById(taskId);
+
         if (optionalTask.isPresent()) {
-            if (optionalTask.get().getHoras()>0) {
-                Task task = optionalTask.get();
-                task.setStatus("Completada");
-                return taskRepository.save(task);
+            Task task = optionalTask.get();
+            double totalHoras = 0;
+
+            if (task.getTaskLines() != null) {
+                for (TaskLine taskLine : task.getTaskLines()) {
+                    if (taskLine != null && taskLine.getHorasTask() != null) {
+                        totalHoras += taskLine.getHorasTask();
+                    }
+                }
             }
-            throw new RuntimeException("Horas menores a 0: " + taskId);
+
+            if (totalHoras <= 0) {
+                throw new RuntimeException("Horas deben ser mayores a 0 para completar la tarea" );
+            }
+
+            task.setStatus("Completada");
+
+            return taskRepository.save(task);
         } else {
             throw new RuntimeException("Task not found with ID: " + taskId);
         }
     }
-
+    public Task updateStepTask(long id, String step){
+        Optional<Task> find= taskRepository.findById(id);
+        Task tarea = find.get();
+        tarea.setStatus(step);
+        return taskRepository.save(tarea);
+    }
     public List<Task> getTasksByDateRangeAndProjectName(String name, String rango) {
         Date currentDate = new Date();
         Date startDate;

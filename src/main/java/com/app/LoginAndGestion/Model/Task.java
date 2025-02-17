@@ -3,12 +3,9 @@ package com.app.LoginAndGestion.Model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
-@Data
 @Table(name = "task")
 public class Task {
 
@@ -28,6 +25,9 @@ public class Task {
 
     private String status;
     private double horas;
+
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String description;
     private String projectName;
 
@@ -35,13 +35,24 @@ public class Task {
     @JoinColumn(name = "type_task_id")
     private TypeTask type;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
+    private Set<TaskLine> taskLines = new HashSet<>();
+
+    @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     @JoinTable(
             name = "user_task",
             joinColumns = @JoinColumn(name = "task_id"),
             inverseJoinColumns = @JoinColumn(name = "user_login_id")
     )
     private Set<User> responsables = new HashSet<>();
+
+    public Set<TaskLine> getTaskLines() {
+        return taskLines;
+    }
+
+    public void setTaskLines(Set<TaskLine> taskLines) {
+        this.taskLines = taskLines;
+    }
 
     public Long getId() {
         return id;
@@ -119,7 +130,10 @@ public class Task {
         return responsables;
     }
 
-    public void setResponsables(Set<User> responsables) {
-        this.responsables = responsables;
+    public void setResponsables(Set<User> nuevoResponsables) {
+        this.responsables.clear();
+        if (nuevoResponsables!=null){
+            this.responsables.addAll(nuevoResponsables);
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.app.LoginAndGestion.Controller;
 import com.app.LoginAndGestion.Model.Proyect;
 import com.app.LoginAndGestion.Model.Role;
 import com.app.LoginAndGestion.Model.Task;
+import com.app.LoginAndGestion.Repository.KanbanRepository;
 import com.app.LoginAndGestion.Repository.ProyectRepository;
 import com.app.LoginAndGestion.Repository.TaskRepository;
 import com.app.LoginAndGestion.Service.ProyectService;
@@ -45,6 +46,9 @@ public class GetController {
     private RolService rolService;
     @Autowired
     private ProyectRepository proyectRepository;
+    @Autowired
+    private KanbanRepository kanbanRepository;
+
     @GetMapping({"/", "/proyectos"})
     public String proyect(Model model){
         model.addAttribute("proyects", proyectService.obtenerProyects());
@@ -63,6 +67,7 @@ public class GetController {
 
 
         model.addAttribute("tasks" ,taskRepository.findAllWithResponsables());
+        model.addAttribute("kanbanType" ,kanbanRepository.findAll());
         model.addAttribute("user" , userDetails);
         return "kanban";
     }

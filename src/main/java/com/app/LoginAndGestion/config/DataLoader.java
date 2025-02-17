@@ -1,11 +1,11 @@
 package com.app.LoginAndGestion.config;
 
 import com.app.LoginAndGestion.Model.Role;
-import com.app.LoginAndGestion.Model.Task;
 import com.app.LoginAndGestion.Model.TypeTask;
+import com.app.LoginAndGestion.Model.kanbanType;
 import com.app.LoginAndGestion.Repository.RolRepository;
-import com.app.LoginAndGestion.Repository.TaskRepository;
 import com.app.LoginAndGestion.Repository.TypeTaskRepository;
+import com.app.LoginAndGestion.Repository.KanbanRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +18,17 @@ public class DataLoader {
             if (rolRepository.findAll().isEmpty()) {
                 rolRepository.save(new Role("ADMIN"));
                 rolRepository.save(new Role("USER"));
+            }
+        };
+    }
+    @Bean
+    public CommandLineRunner loadTypeKanban(KanbanRepository kanbanRepository){
+        return  args -> {
+            if (kanbanRepository.findAll().isEmpty()){
+                kanbanRepository.save(new kanbanType("Por hacer"));
+                kanbanRepository.save(new kanbanType("En progreso"));
+                kanbanRepository.save(new kanbanType("Revision"));
+                kanbanRepository.save(new kanbanType("Completada"));
             }
         };
     }

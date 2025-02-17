@@ -1,9 +1,13 @@
 package com.app.LoginAndGestion.Controller;
 
 import com.app.LoginAndGestion.DTO.TaskDTO;
+import com.app.LoginAndGestion.DTO.TaskLineDTO;
 import com.app.LoginAndGestion.DTO.TaskWithResponsableDTO;
 import com.app.LoginAndGestion.Model.Task;
+import com.app.LoginAndGestion.Model.TaskLine;
 import com.app.LoginAndGestion.Model.User;
+import com.app.LoginAndGestion.Repository.KanbanRepository;
+import com.app.LoginAndGestion.Repository.ProyectRepository;
 import com.app.LoginAndGestion.Repository.TaskRepository;
 import com.app.LoginAndGestion.Repository.TypeTaskRepository;
 import com.app.LoginAndGestion.Service.ProyectService;
@@ -38,7 +42,10 @@ public class ProyectoController {
     private TypeTaskRepository typeTaskRepository;
     @Autowired
     private ProyectService proyectService;
-
+    @Autowired
+    private ProyectRepository proyectRepository;
+    @Autowired
+    private KanbanRepository kanbanRepository;
 
     public ProyectoController(TaskService taskService) {
         this.taskService = taskService;
@@ -47,16 +54,23 @@ public class ProyectoController {
 
     @GetMapping("/{filtro}/edit/{id}")
     public String editporId(@PathVariable String filtro, @PathVariable long id, Model model) {
-        Optional<Task> taskOpt = taskService.findID(id);
+        Optional<TaskDTO> taskOpt = taskService.findID(id);
         List<User> users = userLoginService.listUser();
 
         if (taskOpt.isPresent()) {
+            TaskDTO task = taskOpt.get();
+            int totalHoras = 0;
+            for (TaskLineDTO taskLineDTO : task.getTaskLines()) {
+                double hours = taskLineDTO.getHours();
+                totalHoras += hours;
+            }
 
-            Task task = taskOpt.get();
             model.addAttribute("users", users);
             model.addAttribute("taskforEdit", task);
+            model.addAttribute("kanbanType" ,kanbanRepository.findAll());
             model.addAttribute("filtrodos", filtro);
-            return "Detailtask";
+            model.addAttribute("totalHoras",totalHoras);
+            return "taskDatail";
 
         } else {
 
@@ -95,6 +109,7 @@ public class ProyectoController {
         model.addAttribute("users", users);
         model.addAttribute("filtro", ProjectName);
         model.addAttribute("tasks", taskPage.getContent());
+        model.addAttribute("kanbanType" ,kanbanRepository.findAll());
         model.addAttribute("tasktypes", typeTaskRepository.findAll());
         model.addAttribute("currentPage", taskPage.getNumber());
         model.addAttribute("totalPages", taskPage.getTotalPages());
@@ -109,7 +124,6 @@ public class ProyectoController {
                         @DateTimeFormat(pattern = "dd-mm-yyyy") Date comienzo,
                         @RequestParam(required = false)
                         @DateTimeFormat(pattern = "dd-mm-yyyy") Date fin,
-
                         @RequestParam(required = false) String responsable,
                         @RequestParam(required = false) String estado,
                         Model model) {
@@ -127,12 +141,16 @@ public class ProyectoController {
         List<User> users = userLoginService.listUser();
 
         model.addAttribute("users", users);
-        model.addAttribute("filtro", "All Task");
+        model.addAttribute("filtro", "todas las Task");
         model.addAttribute("tasks", taskPage.getContent());
+        model.addAttribute("kanbanType" ,kanbanRepository.findAll());
+        model.addAttribute("proyects",proyectRepository.findAll());
+        model.addAttribute("tasktypes", typeTaskRepository.findAll());
         model.addAttribute("currentPage", taskPage.getNumber());
         model.addAttribute("totalPages", taskPage.getTotalPages());
         return "index";
     }
+
     @GetMapping("/users")
     public String usertask(Model model){
         List<TaskWithResponsableDTO> tasks = taskRepository.findAllWithResponsables();
